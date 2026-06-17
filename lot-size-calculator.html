@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forex Lot Size Calculator — Position Size by Risk %</title>
+  <meta name="description" content="Free forex lot size calculator. Calculate position size by risk percentage, fixed dollar amount, or FTMO-safe limits. Supports 20+ pairs including XAU/USD Gold. No signup required."/>
+  <meta name="keywords" content="forex lot size calculator, position size calculator forex, lot size by risk percentage, FTMO lot size, forex position sizing"/>
+  <link rel="canonical" href="https://lot-size-fx.com/"/>
+  <meta property="og:title" content="Forex Lot Size Calculator — Free Position Sizing Tool"/>
+  <meta property="og:type" content="website"/>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());gtag('config','G-XXXXXXXXXX');
+    function trackCalc(n){gtag('event','calculator_used',{'event_category':'engagement','event_label':n});}
+    function trackAffiliate(n){gtag('event','affiliate_click',{'event_category':'monetization','event_label':n});}
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Barlow+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --bg:      #f5f3ee;
+      --surface: #ede9e1;
+      --card:    #ffffff;
+      --border:  #d4cfc4;
+      --ink:     #1a1814;
+      --accent:  #1d3461;
+      --accent2: #e63946;
+      --green:   #2d6a4f;
+      --muted:   #7c7570;
+      --mono:    'IBM Plex Mono', monospace;
+      --sans:    'Barlow Condensed', sans-serif;
+      --radius:  8px;
+      --shadow:  0 2px 12px rgba(0,0,0,.08);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;}
+
+    /* ruled paper lines */
+    body::after{
+      content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+      background-image:repeating-linear-gradient(transparent,transparent 31px,rgba(0,0,0,.04) 31px,rgba(0,0,0,.04) 32px);
+    }
+
+    .wrapper{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 20px 80px;}
+
+    /* top accent bar */
+    .top-bar{height:5px;background:var(--accent);}
+
+    /* ── Header ── */
+    header{padding:28px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:28px;}
+    .header-inner{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;}
+    .site-tag{
+      font-family:var(--mono);font-size:10px;letter-spacing:3px;
+      text-transform:uppercase;color:var(--card);background:var(--accent);
+      padding:4px 10px;border-radius:2px;
+    }
+    header h1{font-size:clamp(22px,5vw,36px);font-weight:800;letter-spacing:-.5px;text-transform:uppercase;}
+    header h1 span{color:var(--accent2);}
+    .header-sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px;}
+
+    /* ── Ad ── */
+    .ad-slot{background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--muted);}
+    .ad-banner{height:90px;margin-bottom:28px;}
+    .ad-rect{height:250px;margin:28px 0;}
+
+    /* ── Tabs ── */
+    .tabs{display:flex;gap:0;margin-bottom:24px;border:2px solid var(--ink);border-radius:var(--radius);overflow:hidden;}
+    .tab-btn{
+      flex:1;background:var(--surface);border:none;border-right:2px solid var(--ink);
+      color:var(--muted);font-family:var(--sans);font-size:13px;font-weight:700;
+      padding:10px 8px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.5px;
+    }
+    .tab-btn:last-child{border-right:none;}
+    .tab-btn.active{background:var(--accent);color:#fff;}
+    .tab-btn:hover:not(.active){background:var(--border);color:var(--ink);}
+
+    /* ── Tool panel ── */
+    .tool-panel{display:none;}
+    .tool-panel.active{display:block;animation:fadeIn .2s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ── Card ── */
+    .card{background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);padding:26px;box-shadow:4px 4px 0 var(--ink);margin-bottom:20px;}
+    .card-title{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:10px;}
+
+    /* ── Form ── */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    @media(max-width:540px){.form-grid,.form-grid-3{grid-template-columns:1fr;}}
+
+    .field{display:flex;flex-direction:column;gap:6px;}
+    label.lbl{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+
+    input[type=number],select.sinput{
+      background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);
+      color:var(--ink);font-family:var(--mono);font-size:15px;
+      padding:9px 12px;outline:none;width:100%;
+      transition:border-color .2s;
+    }
+    input:focus,select.sinput:focus{border-color:var(--accent);}
+    .input-wrap{position:relative;}
+    .input-wrap input{padding-right:40px;}
+    .suffix{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:11px;color:var(--muted);}
+
+    /* ── Presets ── */
+    .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+    .preset{background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--muted);font-family:var(--mono);font-size:11px;padding:3px 10px;cursor:pointer;transition:all .15s;}
+    .preset.active,.preset:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+    /* ── Button ── */
+    .calc-btn{
+      margin-top:18px;width:100%;padding:13px;
+      background:var(--accent);color:#fff;
+      border:2px solid var(--ink);border-radius:var(--radius);
+      font-family:var(--sans);font-size:16px;font-weight:800;
+      cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:1px;
+      box-shadow:3px 3px 0 var(--ink);
+    }
+    .calc-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink);}
+    .calc-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink);}
+
+    /* ── Results ── */
+    .results{display:none;margin-top:20px;}
+    .results.show{display:block;animation:fadeIn .3s ease;}
+
+    .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;}
+    .res-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+    .res-card.hi{border-color:var(--accent);background:#eef2ff;}
+    .res-card.hi-r{border-color:var(--accent2);background:#fff5f5;}
+    .res-card.hi-g{border-color:var(--green);background:#f0fdf4;}
+
+    .res-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+    .res-val{font-family:var(--mono);font-size:22px;font-weight:700;}
+    .res-val.blue{color:var(--accent);}
+    .res-val.red{color:var(--accent2);}
+    .res-val.green{color:var(--green);}
+    .res-unit{font-size:12px;color:var(--muted);margin-left:2px;}
+
+    /* ── Table ── */
+    table{width:100%;border-collapse:collapse;margin-top:14px;}
+    th,td{padding:9px 12px;font-family:var(--mono);font-size:12px;border-bottom:1px solid var(--border);text-align:right;}
+    th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:left;background:var(--surface);}
+    td:first-child{text-align:left;font-weight:700;}
+    tr:hover td{background:#f9f7f3;}
+    .row-hi td{background:#eef2ff;font-weight:700;}
+
+    /* ── Insight ── */
+    .insight{margin-top:14px;background:var(--surface);border-left:4px solid var(--accent);border-radius:var(--radius);padding:14px 16px;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.8;}
+    .insight strong{color:var(--ink);}
+    .ok{color:var(--green);}
+    .warn{color:#c77b00;}
+    .danger{color:var(--accent2);}
+
+    /* ── Aff ── */
+    .aff-strip{background:var(--accent);border:2px solid var(--ink);border-radius:var(--radius);padding:20px 24px;margin-top:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:4px 4px 0 var(--ink);}
+    .aff-strip p{font-size:14px;color:rgba(255,255,255,.8);}
+    .aff-strip strong{color:#fff;}
+    .aff-btn{background:#fff;color:var(--accent);padding:10px 20px;border:2px solid #fff;border-radius:var(--radius);font-size:13px;font-weight:800;text-decoration:none;text-transform:uppercase;letter-spacing:.5px;font-family:var(--sans);}
+    .aff-btn:hover{background:var(--surface);}
+
+    /* ── FAQ/Info ── */
+    .info-section{margin-top:40px;}
+    .info-section h2{font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:-.3px;margin-bottom:12px;border-bottom:2px solid var(--ink);padding-bottom:8px;}
+    .info-section p{color:var(--muted);line-height:1.8;font-size:14px;margin-bottom:12px;font-family:var(--mono);}
+    .faq-item{border-bottom:1px solid var(--border);padding:14px 0;}
+    .faq-q{font-family:var(--sans);font-weight:700;font-size:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:.3px;}
+    .faq-q::after{content:'+';font-size:22px;color:var(--accent);transition:transform .2s;}
+    .faq-q.open::after{transform:rotate(45deg);}
+    .faq-a{display:none;padding-top:10px;color:var(--muted);font-size:13px;line-height:1.75;font-family:var(--mono);}
+    .faq-a.open{display:block;}
+
+    footer{border-top:2px solid var(--ink);padding:20px 0;margin-top:48px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+    .footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+    .footer-links a{font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:none;}
+    .footer-links a:hover{color:var(--accent);}
+    footer p{font-family:var(--mono);font-size:11px;color:var(--muted);}
+    .disclaimer{font-family:var(--mono);font-size:10px;color:var(--muted);opacity:.6;margin-top:10px;line-height:1.6;}
+    .tag{display:inline-block;background:var(--accent);color:#fff;border-radius:3px;padding:2px 8px;font-size:11px;font-family:var(--mono);margin:0 4px 6px 0;}
+  </style>
+</head>
+<body>
+<div class="top-bar"></div>
+<div class="wrapper">
+
+<header>
+  <div class="header-inner">
+    <span class="site-tag">Free Tool</span>
+    <div>
+      <h1>Lot <span>Size</span> Calculator</h1>
+      <div class="header-sub">POSITION SIZING FOR FOREX & GOLD TRADERS</div>
+    </div>
+  </div>
+</header>
+
+<div class="ad-slot ad-banner">AD SLOT · 728×90 — Google AdSense</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('risk')">By Risk %</button>
+  <button class="tab-btn" onclick="switchTab('fixed')">Fixed Amount</button>
+  <button class="tab-btn" onclick="switchTab('ftmo')">FTMO Safe</button>
+  <button class="tab-btn" onclick="switchTab('compare')">Compare Pairs</button>
+</div>
+
+<!-- ══ Tool 1: By Risk % ══ -->
+<div class="tool-panel active" id="panel-risk">
+  <div class="card">
+    <div class="card-title">// Lot Size by Risk Percentage</div>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Account Balance ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="r-balance" value="10000" step="1000"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Risk Per Trade</label>
+        <div class="input-wrap">
+          <input type="number" id="r-risk" value="1" step="0.1" min="0.1"/>
+          <span class="suffix">%</span>
+        </div>
+        <div class="presets">
+          <span class="preset" data-risk="0.5">0.5%</span>
+          <span class="preset active" data-risk="1">1%</span>
+          <span class="preset" data-risk="1.5">1.5%</span>
+          <span class="preset" data-risk="2">2%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Stop Loss (pips)</label>
+        <div class="input-wrap">
+          <input type="number" id="r-sl" value="20" step="1" min="1"/>
+          <span class="suffix">pip</span>
+        </div>
+        <div class="presets">
+          <span class="preset" data-sl="10">10</span>
+          <span class="preset" data-sl="20">20</span>
+          <span class="preset" data-sl="50">50</span>
+          <span class="preset" data-sl="100">100</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Currency Pair</label>
+        <select class="sinput" id="r-pair">
+          <optgroup label="── Majors ──">
+            <option value="10,EURUSD">EUR/USD ($10/pip)</option>
+            <option value="10,GBPUSD">GBP/USD ($10/pip)</option>
+            <option value="10,AUDUSD">AUD/USD ($10/pip)</option>
+            <option value="10,NZDUSD">NZD/USD ($10/pip)</option>
+            <option value="6.7,USDJPY">USD/JPY (~$6.70/pip)</option>
+            <option value="11.1,USDCHF">USD/CHF (~$11.10/pip)</option>
+            <option value="7.4,USDCAD">USD/CAD (~$7.40/pip)</option>
+          </optgroup>
+          <optgroup label="── Metals ──">
+            <option value="1,XAUUSD">XAU/USD Gold ($1/pip)</option>
+            <option value="0.1,XAGUSD">XAG/USD Silver ($0.10/pip)</option>
+          </optgroup>
+          <optgroup label="── JPY Crosses ──">
+            <option value="6.7,EURJPY">EUR/JPY (~$6.70/pip)</option>
+            <option value="6.7,GBPJPY">GBP/JPY (~$6.70/pip)</option>
+            <option value="6.7,AUDJPY">AUD/JPY (~$6.70/pip)</option>
+            <option value="6.7,CADJPY">CAD/JPY (~$6.70/pip)</option>
+            <option value="6.7,CHFJPY">CHF/JPY (~$6.70/pip)</option>
+          </optgroup>
+          <optgroup label="── EUR Crosses ──">
+            <option value="12.7,EURGBP">EUR/GBP (~$12.70/pip)</option>
+            <option value="10,EURAUD">EUR/AUD (~$10/pip)</option>
+            <option value="10,EURCAD">EUR/CAD (~$10/pip)</option>
+            <option value="11.1,EURCHF">EUR/CHF (~$11.10/pip)</option>
+          </optgroup>
+          <optgroup label="── GBP Crosses ──">
+            <option value="10,GBPAUD">GBP/AUD (~$10/pip)</option>
+            <option value="10,GBPCAD">GBP/CAD (~$10/pip)</option>
+            <option value="11.1,GBPCHF">GBP/CHF (~$11.10/pip)</option>
+          </optgroup>
+          <optgroup label="── Other Crosses ──">
+            <option value="10,AUDCAD">AUD/CAD (~$10/pip)</option>
+            <option value="10,AUDNZD">AUD/NZD (~$10/pip)</option>
+          </optgroup>
+          <optgroup label="── Indices ──">
+            <option value="1,US30">US30 / DOW ($1/pip)</option>
+            <option value="0.25,NAS100">NAS100 / NASDAQ ($0.25/pip)</option>
+            <option value="0.1,SPX500">SPX500 / S&amp;P 500 ($0.10/pip)</option>
+            <option value="1,UK100">UK100 / FTSE ($1/pip)</option>
+            <option value="1,GER40">GER40 / DAX ($1/pip)</option>
+          </optgroup>
+          <optgroup label="── Exotics ──">
+            <option value="2.8,USDTHB">USD/THB (~$2.80/pip)</option>
+            <option value="0.054,USDZAR">USD/ZAR (~$0.054/pip)</option>
+            <option value="0.058,USDMXN">USD/MXN (~$0.058/pip)</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcRisk(); trackCalc('lot_risk_pct')">CALCULATE LOT SIZE</button>
+    <div class="results" id="risk-results">
+      <div class="res-grid">
+        <div class="res-card hi">
+          <div class="res-label">Lot Size</div>
+          <div class="res-val blue" id="r-lots">–<span class="res-unit">lots</span></div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Risk Amount</div>
+          <div class="res-val" id="r-riskamt">–</div>
+        </div>
+        <div class="res-card hi-r">
+          <div class="res-label">Max Loss (SL hit)</div>
+          <div class="res-val red" id="r-maxloss">–</div>
+        </div>
+        <div class="res-card hi-g">
+          <div class="res-label">Units Traded</div>
+          <div class="res-val green" id="r-units">–</div>
+        </div>
+      </div>
+      <div class="insight" id="r-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Tool 2: Fixed Amount ══ -->
+<div class="tool-panel" id="panel-fixed">
+  <div class="card">
+    <div class="card-title">// Lot Size by Fixed Dollar Risk</div>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Risk Amount ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="f-riskamt" value="100" step="10"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Stop Loss (pips)</label>
+        <div class="input-wrap">
+          <input type="number" id="f-sl" value="20" step="1"/>
+          <span class="suffix">pip</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Currency Pair</label>
+        <select class="sinput" id="f-pair">
+          <optgroup label="── Majors ──">
+            <option value="10">EUR/USD ($10/pip)</option>
+            <option value="10">GBP/USD ($10/pip)</option>
+            <option value="10">AUD/USD ($10/pip)</option>
+            <option value="10">NZD/USD ($10/pip)</option>
+            <option value="6.7">USD/JPY (~$6.70/pip)</option>
+            <option value="11.1">USD/CHF (~$11.10/pip)</option>
+            <option value="7.4">USD/CAD (~$7.40/pip)</option>
+          </optgroup>
+          <optgroup label="── Metals ──">
+            <option value="1">XAU/USD Gold ($1/pip)</option>
+            <option value="0.1">XAG/USD Silver ($0.10/pip)</option>
+          </optgroup>
+          <optgroup label="── JPY Crosses ──">
+            <option value="6.7">EUR/JPY (~$6.70/pip)</option>
+            <option value="6.7">GBP/JPY (~$6.70/pip)</option>
+            <option value="6.7">AUD/JPY (~$6.70/pip)</option>
+            <option value="6.7">CAD/JPY (~$6.70/pip)</option>
+            <option value="6.7">CHF/JPY (~$6.70/pip)</option>
+          </optgroup>
+          <optgroup label="── EUR Crosses ──">
+            <option value="12.7">EUR/GBP (~$12.70/pip)</option>
+            <option value="10">EUR/AUD (~$10/pip)</option>
+            <option value="10">EUR/CAD (~$10/pip)</option>
+            <option value="11.1">EUR/CHF (~$11.10/pip)</option>
+          </optgroup>
+          <optgroup label="── GBP Crosses ──">
+            <option value="10">GBP/AUD (~$10/pip)</option>
+            <option value="10">GBP/CAD (~$10/pip)</option>
+            <option value="11.1">GBP/CHF (~$11.10/pip)</option>
+          </optgroup>
+          <optgroup label="── Indices ──">
+            <option value="1">US30 / DOW ($1/pip)</option>
+            <option value="0.25">NAS100 / NASDAQ ($0.25/pip)</option>
+            <option value="0.1">SPX500 / S&amp;P 500 ($0.10/pip)</option>
+            <option value="1">UK100 / FTSE ($1/pip)</option>
+            <option value="1">GER40 / DAX ($1/pip)</option>
+          </optgroup>
+          <optgroup label="── Exotics ──">
+            <option value="2.8">USD/THB (~$2.80/pip)</option>
+            <option value="0.054">USD/ZAR (~$0.054/pip)</option>
+            <option value="0.058">USD/MXN (~$0.058/pip)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl">Account Balance ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="f-balance" value="10000" step="1000"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcFixed(); trackCalc('lot_fixed')">CALCULATE LOT SIZE</button>
+    <div class="results" id="fixed-results">
+      <div class="res-grid">
+        <div class="res-card hi">
+          <div class="res-label">Lot Size</div>
+          <div class="res-val blue" id="f-lots">–<span class="res-unit">lots</span></div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">% of Account</div>
+          <div class="res-val" id="f-pct">–<span class="res-unit">%</span></div>
+        </div>
+        <div class="res-card hi-r">
+          <div class="res-label">Verified Loss</div>
+          <div class="res-val red" id="f-verify">–</div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Pip Value</div>
+          <div class="res-val" id="f-pipval">–</div>
+        </div>
+      </div>
+      <div class="insight" id="f-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Tool 3: FTMO Safe ══ -->
+<div class="tool-panel" id="panel-ftmo">
+  <div class="card">
+    <div class="card-title">// FTMO Safe Lot Size — Stays Within 5% Daily Limit</div>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">FTMO Account Size ($)</label>
+        <select class="sinput" id="ft-size">
+          <option value="10000">$10,000</option>
+          <option value="25000">$25,000</option>
+          <option value="50000">$50,000</option>
+          <option value="100000" selected>$100,000</option>
+          <option value="200000">$200,000</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl">Trades Per Day (planned)</label>
+        <div class="input-wrap">
+          <input type="number" id="ft-trades" value="3" step="1" min="1" max="20"/>
+          <span class="suffix">trades</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Stop Loss (pips)</label>
+        <div class="input-wrap">
+          <input type="number" id="ft-sl" value="20" step="1"/>
+          <span class="suffix">pip</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Currency Pair</label>
+        <select class="sinput" id="ft-pair">
+          <optgroup label="── Majors ──">
+            <option value="10">EUR/USD ($10/pip)</option>
+            <option value="10">GBP/USD ($10/pip)</option>
+            <option value="10">AUD/USD ($10/pip)</option>
+            <option value="10">NZD/USD ($10/pip)</option>
+            <option value="6.7">USD/JPY (~$6.70/pip)</option>
+            <option value="11.1">USD/CHF (~$11.10/pip)</option>
+            <option value="7.4">USD/CAD (~$7.40/pip)</option>
+          </optgroup>
+          <optgroup label="── Metals ──">
+            <option value="1">XAU/USD Gold ($1/pip)</option>
+            <option value="0.1">XAG/USD Silver ($0.10/pip)</option>
+          </optgroup>
+          <optgroup label="── JPY Crosses ──">
+            <option value="6.7">EUR/JPY (~$6.70/pip)</option>
+            <option value="6.7">GBP/JPY (~$6.70/pip)</option>
+            <option value="6.7">AUD/JPY (~$6.70/pip)</option>
+            <option value="6.7">CAD/JPY (~$6.70/pip)</option>
+          </optgroup>
+          <optgroup label="── EUR/GBP Crosses ──">
+            <option value="12.7">EUR/GBP (~$12.70/pip)</option>
+            <option value="10">EUR/AUD (~$10/pip)</option>
+            <option value="10">GBP/AUD (~$10/pip)</option>
+            <option value="10">GBP/CAD (~$10/pip)</option>
+          </optgroup>
+          <optgroup label="── Indices ──">
+            <option value="1">US30 / DOW ($1/pip)</option>
+            <option value="0.25">NAS100 / NASDAQ ($0.25/pip)</option>
+            <option value="0.1">SPX500 / S&amp;P 500 ($0.10/pip)</option>
+          </optgroup>
+          <optgroup label="── Exotics ──">
+            <option value="2.8">USD/THB (~$2.80/pip)</option>
+            <option value="0.054">USD/ZAR (~$0.054/pip)</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcFTMO(); trackCalc('lot_ftmo')">CALCULATE FTMO SAFE SIZE</button>
+    <div class="results" id="ftmo-results">
+      <div class="res-grid">
+        <div class="res-card hi">
+          <div class="res-label">Max Safe Lot Size</div>
+          <div class="res-val blue" id="ft-lots">–<span class="res-unit">lots</span></div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Daily Loss Limit</div>
+          <div class="res-val" id="ft-dailylimit">–</div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Risk Per Trade</div>
+          <div class="res-val" id="ft-pertrade">–</div>
+        </div>
+        <div class="res-card hi-g">
+          <div class="res-label">Buffer Remaining</div>
+          <div class="res-val green" id="ft-buffer">–</div>
+        </div>
+      </div>
+      <div class="insight" id="ft-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Tool 4: Compare Pairs ══ -->
+<div class="tool-panel" id="panel-compare">
+  <div class="card">
+    <div class="card-title">// Lot Size Comparison — Same Risk Across Pairs</div>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Account Balance ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="c-balance" value="10000" step="1000"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Risk Per Trade (%)</label>
+        <div class="input-wrap">
+          <input type="number" id="c-risk" value="1" step="0.1"/>
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Stop Loss (pips)</label>
+        <div class="input-wrap">
+          <input type="number" id="c-sl" value="20" step="1"/>
+          <span class="suffix">pip</span>
+        </div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcCompare(); trackCalc('lot_compare')">COMPARE ALL PAIRS</button>
+    <div class="results" id="compare-results">
+      <table>
+        <thead><tr><th>Pair</th><th>Pip Value</th><th>Lot Size</th><th>Units</th><th>Verify Loss</th></tr></thead>
+        <tbody id="compare-tbody"></tbody>
+      </table>
+      <div class="insight" id="c-insight"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ad-slot ad-rect">AD SLOT · 300×250 — Google AdSense</div>
+
+<div class="aff-strip">
+  <div>
+    <p><strong>Trade with tight spreads on all major pairs</strong></p>
+    <p style="font-size:12px;margin-top:4px;">ECN pricing · No requotes · Fast execution</p>
+  </div>
+  <a href="#" class="aff-btn" onclick="trackAffiliate('broker_lot_calc')">Open Account →</a>
+</div>
+
+<div class="info-section">
+  <div style="margin-bottom:12px;">
+    <span class="tag">Free</span><span class="tag">20+ Pairs</span><span class="tag">FTMO Safe</span><span class="tag">XAU/USD</span>
+  </div>
+  <h2>How Lot Size Calculation Works</h2>
+  <p>Lot size = Risk Amount ÷ (Stop Loss in pips × Pip Value per lot). For EUR/USD with $100 risk, 20-pip SL: Lot = $100 ÷ (20 × $10) = 0.50 lots. This keeps every trade at exactly the same dollar risk regardless of SL distance.</p>
+
+  <h2 style="margin-top:28px;">FAQ</h2>
+  <div class="faq-item">
+    <div class="faq-q">What is a standard lot in forex?</div>
+    <div class="faq-a">A standard lot = 100,000 units of base currency. A mini lot (0.10) = 10,000 units. A micro lot (0.01) = 1,000 units. For EUR/USD: 1 standard lot pip value = $10. For XAU/USD gold: 1 standard lot = 100 oz, pip value = $1.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">What percentage should I risk per trade?</div>
+    <div class="faq-a">Most professional traders risk 0.5–2% per trade. For FTMO challenges: 0.5–1% is recommended, allowing 5–10 losing trades before hitting the 5% daily limit. Risking 2% means only 2–3 losing trades before you must stop for the day. Lower risk % = more trades before hitting limits = more opportunities.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Why is XAU/USD lot size calculation different?</div>
+    <div class="faq-a">Gold's pip value is $1/lot (vs $10/lot for EUR/USD). This means for the same SL distance in pips, gold requires 10× more lots than EUR/USD. However, gold typically has much larger SL distances (100–300 pips vs 20–50 pips for forex), so the final lot size ends up being smaller. Always use the correct pip value for each instrument.</div>
+  </div>
+</div>
+
+<p class="disclaimer">* Pip values are approximate and vary with live exchange rates. Verify with your broker before trading. Not financial advice.</p>
+
+<footer>
+  <p>© 2026 LotSizeFX.com · Free Forex Position Sizing</p>
+  <div class="footer-links">
+    <a href="#">Pip Calculator</a><a href="#">FTMO Calc</a>
+    <a href="#">Gold Position</a><a href="#">Risk/Reward</a><a href="#">Privacy</a>
+  </div>
+</footer>
+</div>
+
+<script>
+function fmt(n){return '$'+Math.abs(n).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtN(n,d=2){return n.toFixed(d);}
+
+function switchTab(name){
+  document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// Presets
+document.querySelectorAll('.preset[data-risk]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.preset[data-risk]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('r-risk').value=b.dataset.risk;
+  });
+});
+document.querySelectorAll('.preset[data-sl]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.preset[data-sl]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('r-sl').value=b.dataset.sl;
+  });
+});
+
+/* Tool 1: Risk % */
+function calcRisk(){
+  const balance=parseFloat(document.getElementById('r-balance').value)||0;
+  const riskPct=parseFloat(document.getElementById('r-risk').value)||1;
+  const sl=parseFloat(document.getElementById('r-sl').value)||20;
+  const pairVal=document.getElementById('r-pair').value.split(',');
+  const pipVal=parseFloat(pairVal[0]);
+  const pairName=pairVal[1];
+
+  const riskAmt=balance*(riskPct/100);
+  const lots=riskAmt/(sl*pipVal);
+  const units=lots*100000;
+  const verify=lots*sl*pipVal;
+
+  document.getElementById('r-lots').innerHTML=fmtN(lots,2)+'<span class="res-unit">lots</span>';
+  document.getElementById('r-riskamt').innerHTML=fmt(riskAmt);
+  document.getElementById('r-maxloss').innerHTML='-'+fmt(verify);
+  document.getElementById('r-units').innerHTML=Math.round(units).toLocaleString();
+
+  document.getElementById('r-insight').innerHTML=
+    `<strong>Formula:</strong> ${fmt(riskAmt)} ÷ (${sl} pips × $${pipVal}/pip) = <strong>${fmtN(lots,2)} lots</strong><br>
+     Verification: ${fmtN(lots,2)} × ${sl} × $${pipVal} = ${fmt(verify)} ✅<br>
+     ${riskPct<=1?'<span class="ok">✅ Conservative — recommended for FTMO.</span>':riskPct<=2?'<span class="warn">⚠️ Moderate — monitor daily limit carefully.</span>':'<span class="danger">🚨 High risk — not recommended for prop challenges.</span>'}`;
+
+  document.getElementById('risk-results').classList.add('show');
+}
+
+/* Tool 2: Fixed */
+function calcFixed(){
+  const riskAmt=parseFloat(document.getElementById('f-riskamt').value)||0;
+  const sl=parseFloat(document.getElementById('f-sl').value)||20;
+  const pipVal=parseFloat(document.getElementById('f-pair').value)||10;
+  const balance=parseFloat(document.getElementById('f-balance').value)||10000;
+
+  const lots=riskAmt/(sl*pipVal);
+  const pct=(riskAmt/balance)*100;
+  const verify=lots*sl*pipVal;
+
+  document.getElementById('f-lots').innerHTML=fmtN(lots,2)+'<span class="res-unit">lots</span>';
+  document.getElementById('f-pct').innerHTML=fmtN(pct,2)+'<span class="res-unit">%</span>';
+  document.getElementById('f-verify').innerHTML='-'+fmt(verify);
+  document.getElementById('f-pipval').innerHTML='$'+pipVal+'/pip';
+
+  document.getElementById('f-insight').innerHTML=
+    `${fmt(riskAmt)} risk ÷ (${sl} pips × $${pipVal}/pip) = <strong>${fmtN(lots,2)} lots</strong><br>
+     This equals <strong>${fmtN(pct,2)}% of your ${fmt(balance)} balance</strong>`;
+
+  document.getElementById('fixed-results').classList.add('show');
+}
+
+/* Tool 3: FTMO */
+function calcFTMO(){
+  const size=parseFloat(document.getElementById('ft-size').value)||100000;
+  const trades=parseFloat(document.getElementById('ft-trades').value)||3;
+  const sl=parseFloat(document.getElementById('ft-sl').value)||20;
+  const pipVal=parseFloat(document.getElementById('ft-pair').value)||10;
+
+  const dailyLimit=size*0.05;
+  // Leave 20% buffer: use only 80% of daily limit
+  const usableLimit=dailyLimit*0.8;
+  const riskPerTrade=usableLimit/trades;
+  const lots=riskPerTrade/(sl*pipVal);
+  const buffer=dailyLimit-usableLimit;
+
+  document.getElementById('ft-lots').innerHTML=fmtN(lots,2)+'<span class="res-unit">lots</span>';
+  document.getElementById('ft-dailylimit').innerHTML=fmt(dailyLimit)+' (5%)';
+  document.getElementById('ft-pertrade').innerHTML=fmt(riskPerTrade);
+  document.getElementById('ft-buffer').innerHTML=fmt(buffer)+' safety';
+
+  document.getElementById('ft-insight').innerHTML=
+    `Daily limit: ${fmt(dailyLimit)} → Using 80% = ${fmt(usableLimit)}<br>
+     ${trades} trades × ${fmt(riskPerTrade)} each = ${fmt(usableLimit)} max daily loss<br>
+     <strong>${fmt(buffer)} buffer kept</strong> to avoid accidental breach<br>
+     <span class="ok">✅ All ${trades} trades can hit SL — still within FTMO 5% limit.</span>`;
+
+  document.getElementById('ftmo-results').classList.add('show');
+}
+
+/* Tool 4: Compare */
+function calcCompare(){
+  const balance=parseFloat(document.getElementById('c-balance').value)||0;
+  const riskPct=parseFloat(document.getElementById('c-risk').value)||1;
+  const sl=parseFloat(document.getElementById('c-sl').value)||20;
+  const riskAmt=balance*(riskPct/100);
+
+  const PAIRS=[
+    ['EUR/USD',10],['GBP/USD',10],['AUD/USD',10],['NZD/USD',10],
+    ['USD/JPY',6.7],['USD/CHF',11.1],['USD/CAD',7.4],
+    ['XAU/USD Gold',1],['XAG/USD Silver',0.1],
+    ['EUR/JPY',6.7],['GBP/JPY',6.7],['AUD/JPY',6.7],['CAD/JPY',6.7],['CHF/JPY',6.7],
+    ['EUR/GBP',12.7],['EUR/AUD',10],['EUR/CAD',10],['EUR/CHF',11.1],
+    ['GBP/AUD',10],['GBP/CAD',10],['GBP/CHF',11.1],
+    ['AUD/CAD',10],['AUD/NZD',10],
+    ['US30/DOW',1],['NAS100',0.25],['SPX500',0.1],['UK100',1],['GER40',1],
+    ['USD/THB',2.8],['USD/ZAR',0.054],['USD/MXN',0.058],
+  ];
+
+  const tbody=document.getElementById('compare-tbody');
+  tbody.innerHTML='';
+  PAIRS.forEach(([pair,pv])=>{
+    const lots=riskAmt/(sl*pv);
+    const units=lots*100000;
+    const verify=lots*sl*pv;
+    const hi=pair.includes('Gold')?'class="row-hi"':'';
+    tbody.innerHTML+=`<tr ${hi}>
+      <td>${pair}</td>
+      <td>$${pv}/pip</td>
+      <td>${fmtN(lots,2)} lots</td>
+      <td>${Math.round(units).toLocaleString()}</td>
+      <td style="color:#c0392b">-${fmt(verify)}</td>
+    </tr>`;
+  });
+
+  document.getElementById('c-insight').innerHTML=
+    `All pairs above carry identical risk: <strong>${fmt(riskAmt)} (${riskPct}% of ${fmt(balance)})</strong><br>
+     Different lot sizes = same dollar loss if SL is hit on every pair ✅`;
+
+  document.getElementById('compare-results').classList.add('show');
+}
+
+document.querySelectorAll('.faq-q').forEach(q=>{
+  q.addEventListener('click',()=>{q.classList.toggle('open');q.nextElementSibling.classList.toggle('open');});
+});
+</script>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Forex Lot Size Calculator","description":"Free forex lot size calculator. Position sizing by risk %, fixed amount, FTMO-safe method, and cross-pair comparison.","url":"https://lot-size-fx.com","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>XAU/USD Gold Position Size Calculator — Free Lot Size Tool</title>
+  <meta name="description" content="Free XAU/USD gold position size calculator. Calculate lot size by pip SL, dollar SL, or ATR-based stop. Supports FTMO accounts. Shows risk/reward table and THB conversion."/>
+  <meta name="keywords" content="xauusd position size calculator, gold lot size calculator, xauusd risk calculator, gold forex position size, FTMO gold calculator"/>
+  <link rel="canonical" href="https://gold-position.com/"/>
+  <meta property="og:title" content="XAU/USD Gold Position Size Calculator — Free"/>
+  <meta property="og:description" content="Calculate safe lot sizes for gold trading. Pip SL, dollar SL, and ATR-based methods. FTMO ready."/>
+  <meta property="og:type" content="website"/>
+
+  <!-- Google Analytics GA4 — Replace G-XXXXXXXXXX -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+    function trackCalc(n){gtag('event','calculator_used',{'event_category':'engagement','event_label':n});}
+    function trackAffiliate(n){gtag('event','affiliate_click',{'event_category':'monetization','event_label':n});}
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --bg:      #0a0800;
+      --surface: #0f0d02;
+      --card:    #141108;
+      --border:  #2a2408;
+      --gold:    #f59e0b;
+      --gold2:   #fbbf24;
+      --cream:   #fef3c7;
+      --green:   #10b981;
+      --red:     #ef4444;
+      --blue:    #60a5fa;
+      --text:    #fef9ec;
+      --muted:   #78716c;
+      --mono:    'Space Mono', monospace;
+      --sans:    'Unbounded', sans-serif;
+      --radius:  12px;
+      --glow:    0 0 40px rgba(245,158,11,.15);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+    body{
+      background:var(--bg);color:var(--text);
+      font-family:var(--sans);min-height:100vh;overflow-x:hidden;
+    }
+
+    /* gold particle background */
+    body::after{
+      content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(245,158,11,.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(251,191,36,.04) 0%, transparent 50%),
+        linear-gradient(rgba(245,158,11,.015) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(245,158,11,.015) 1px,transparent 1px);
+      background-size:100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    }
+
+    .wrapper{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 20px 80px;}
+
+    /* ── Header ── */
+    header{padding:36px 0 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .logo{
+      width:50px;height:50px;border-radius:12px;flex-shrink:0;
+      background:linear-gradient(135deg,#92400e,var(--gold));
+      display:grid;place-items:center;font-size:22px;
+    }
+    .header-text h1{font-size:clamp(16px,3.5vw,24px);font-weight:900;letter-spacing:-.5px;line-height:1.2;}
+    .header-text h1 span{color:var(--gold);}
+    .header-text p{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:1px;}
+    .price-ticker{
+      margin-left:auto;
+      background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);
+      border-radius:8px;padding:8px 16px;
+      font-family:var(--mono);font-size:11px;
+    }
+    .price-ticker .label{color:var(--muted);letter-spacing:1px;}
+    .price-ticker .val{color:var(--gold);font-weight:700;font-size:15px;display:block;margin-top:2px;}
+
+    /* ── Ad ── */
+    .ad-slot{
+      background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius);
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--mono);font-size:11px;color:var(--muted);
+    }
+    .ad-banner{height:90px;margin-bottom:28px;}
+    .ad-rect{height:250px;margin:28px 0;}
+
+    /* ── Gold spec bar ── */
+    .spec-bar{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;
+      margin-bottom:24px;
+    }
+    .spec-chip{
+      background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;
+    }
+    .spec-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+    .spec-val{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--gold);}
+
+    /* ── Tabs ── */
+    .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+    .tab-btn{
+      background:var(--surface);border:1px solid var(--border);border-radius:8px;
+      color:var(--muted);font-family:var(--sans);font-size:11px;font-weight:600;
+      padding:9px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;
+    }
+    .tab-btn.active{background:rgba(245,158,11,.12);border-color:var(--gold);color:var(--gold);}
+    .tab-btn:hover:not(.active){color:var(--text);border-color:#3a2e08;}
+
+    /* ── Tool panel ── */
+    .tool-panel{display:none;}
+    .tool-panel.active{display:block;animation:fadeUp .25s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ── Card ── */
+    .card{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--radius);padding:26px;position:relative;
+      overflow:hidden;margin-bottom:16px;
+    }
+    .card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,var(--gold),var(--gold2),transparent);
+    }
+    .card-title{
+      font-family:var(--mono);font-size:10px;color:var(--gold);
+      letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;
+    }
+
+    /* ── Form ── */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    @media(max-width:560px){.form-grid,.form-grid-3{grid-template-columns:1fr;}}
+
+    .field{display:flex;flex-direction:column;gap:6px;}
+    label.lbl{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+
+    input[type=number], select.sinput{
+      background:var(--surface);border:1.5px solid var(--border);border-radius:8px;
+      color:var(--text);font-family:var(--mono);font-size:14px;
+      padding:10px 14px;outline:none;width:100%;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    input:focus,select.sinput:focus{border-color:var(--gold);box-shadow:var(--glow);}
+    select.sinput option{background:#141108;}
+
+    .input-wrap{position:relative;}
+    .input-wrap input{padding-right:44px;}
+    .suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:12px;color:var(--muted);}
+
+    /* ── Calc btn ── */
+    .calc-btn{
+      margin-top:18px;width:100%;padding:13px;
+      background:linear-gradient(135deg,#92400e,var(--gold));
+      color:#000;border:none;border-radius:8px;
+      font-family:var(--sans);font-size:14px;font-weight:700;
+      cursor:pointer;transition:opacity .2s,transform .1s;letter-spacing:.5px;
+    }
+    .calc-btn:hover{opacity:.88;}
+    .calc-btn:active{transform:scale(.985);}
+
+    /* ── Results ── */
+    .results{display:none;margin-top:20px;}
+    .results.show{display:block;animation:fadeUp .3s ease;}
+
+    .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;}
+    .res-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 16px;}
+    .res-card.hi{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.06);}
+    .res-card.hi-g{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06);}
+    .res-card.hi-r{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.06);}
+
+    .res-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+    .res-val{font-family:var(--mono);font-size:22px;font-weight:700;}
+    .res-val.gold{color:var(--gold);}
+    .res-val.green{color:var(--green);}
+    .res-val.red{color:var(--red);}
+    .res-val.blue{color:var(--blue);}
+    .res-unit{font-size:12px;color:var(--muted);margin-left:2px;}
+
+    /* ── RR table ── */
+    table{width:100%;border-collapse:collapse;margin-top:14px;}
+    th,td{padding:9px 12px;font-family:var(--mono);font-size:12px;border-bottom:1px solid var(--border);text-align:right;}
+    th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:left;}
+    th:first-child{text-align:left;}
+    td:first-child{text-align:left;color:var(--gold);}
+    tr:hover td{background:rgba(245,158,11,.03);}
+    .win{color:var(--green);}
+    .loss{color:var(--red);}
+
+    /* ── Progress bar ── */
+    .prog-wrap{margin-top:14px;}
+    .prog-label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:5px;}
+    .prog-bar{height:6px;background:var(--surface);border-radius:3px;overflow:hidden;}
+    .prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#92400e,var(--gold));transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+
+    /* ── Insight ── */
+    .insight{
+      margin-top:14px;background:var(--surface);
+      border:1px solid var(--border);border-left:3px solid var(--gold);
+      border-radius:8px;padding:14px 16px;
+      font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.8;
+    }
+    .insight strong{color:var(--text);}
+    .ok{color:var(--green);}
+    .warn{color:var(--gold);}
+    .danger{color:var(--red);}
+
+    /* ── Warn box ── */
+    .warn-box{
+      background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);
+      border-radius:8px;padding:12px 16px;margin-top:12px;
+      font-family:var(--mono);font-size:11px;color:var(--gold);line-height:1.7;
+    }
+
+    /* ── Aff strip ── */
+    .aff-strip{
+      background:linear-gradient(135deg,#0f0a00,#1a1200);
+      border:1px solid rgba(245,158,11,.2);border-radius:var(--radius);
+      padding:22px 26px;margin-top:28px;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    }
+    .aff-strip p{font-size:13px;color:rgba(255,249,220,.7);}
+    .aff-strip strong{color:var(--gold);}
+    .aff-btn{
+      background:linear-gradient(135deg,#92400e,var(--gold));color:#000;
+      padding:10px 22px;border-radius:8px;font-size:12px;font-weight:700;
+      text-decoration:none;white-space:nowrap;font-family:var(--sans);
+    }
+    .aff-btn:hover{opacity:.85;}
+
+    /* ── SEO / FAQ ── */
+    .info-section{margin-top:40px;}
+    .info-section h2{font-size:18px;font-weight:700;margin-bottom:12px;}
+    .info-section p{color:var(--muted);line-height:1.8;font-size:14px;margin-bottom:12px;font-family:var(--mono);}
+    .faq-item{border-top:1px solid var(--border);padding:16px 0;}
+    .faq-q{font-family:var(--mono);font-weight:700;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+    .faq-q::after{content:'+';font-size:20px;color:var(--gold);transition:transform .2s;}
+    .faq-q.open::after{transform:rotate(45deg);}
+    .faq-a{display:none;padding-top:10px;color:var(--muted);font-size:13px;line-height:1.75;font-family:var(--mono);}
+    .faq-a.open{display:block;}
+
+    /* ── Footer ── */
+    footer{border-top:1px solid var(--border);padding:24px 0;margin-top:48px;}
+    .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    .footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+    .footer-links a{font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:none;}
+    .footer-links a:hover{color:var(--gold);}
+    footer p{font-family:var(--mono);font-size:11px;color:var(--muted);}
+    .disclaimer{font-family:var(--mono);font-size:10px;color:var(--muted);opacity:.5;margin-top:10px;line-height:1.6;}
+    .tag{display:inline-block;background:rgba(245,158,11,.1);color:var(--gold);border-radius:4px;padding:2px 8px;font-size:11px;font-family:var(--mono);margin:0 4px 6px 0;}
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- Header -->
+<header>
+  <div class="logo">🥇</div>
+  <div class="header-text">
+    <h1>XAU/USD <span>Gold</span><br/>Position Size</h1>
+    <p>VERIFIED · 100 OZ/LOT · $1/PIP</p>
+  </div>
+  <div class="price-ticker">
+    <span class="label">SPOT GOLD</span>
+    <span class="val" id="gold-price-display">$2,400.00</span>
+  </div>
+</header>
+
+<!-- Ad -->
+<div class="ad-slot ad-banner">AD SLOT · 728×90 — Google AdSense</div>
+
+<!-- Gold Spec Bar -->
+<div class="spec-bar">
+  <div class="spec-chip"><div class="spec-label">Contract Size</div><div class="spec-val">100 oz/lot</div></div>
+  <div class="spec-chip"><div class="spec-label">Pip Size</div><div class="spec-val">$0.01</div></div>
+  <div class="spec-chip"><div class="spec-label">Pip Value (1 lot)</div><div class="spec-val">$1.00</div></div>
+  <div class="spec-chip"><div class="spec-label">Min Lot Size</div><div class="spec-val">0.01 lots</div></div>
+  <div class="spec-chip"><div class="spec-label">Tick Size</div><div class="spec-val">$0.01/oz</div></div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('pip')">📐 Pip SL Method</button>
+  <button class="tab-btn" onclick="switchTab('dollar')">💵 Dollar SL Method</button>
+  <button class="tab-btn" onclick="switchTab('atr')">📊 ATR Method</button>
+  <button class="tab-btn" onclick="switchTab('rr')">⚖️ Risk/Reward Table</button>
+</div>
+
+<!-- ══════════════════
+     TOOL 1: Pip SL
+══════════════════ -->
+<div class="tool-panel active" id="panel-pip">
+  <div class="card">
+    <div class="card-title">// Position Size — Stop Loss in Pips</div>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Account Balance ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="p-balance" value="10000" step="1000"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Risk Per Trade (%)</label>
+        <div class="input-wrap">
+          <input type="number" id="p-risk" value="1" step="0.1" min="0.1" max="10"/>
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Stop Loss (pips)</label>
+        <div class="input-wrap">
+          <input type="number" id="p-sl" value="100" step="1" min="1"/>
+          <span class="suffix">pip</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Gold Price ($/oz)</label>
+        <div class="input-wrap">
+          <input type="number" id="p-price" value="2400" step="1"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcPip(); trackCalc('xau_pip_sl')">⚖️ CALCULATE POSITION SIZE</button>
+    <div class="results" id="pip-results">
+      <div class="res-grid">
+        <div class="res-card hi">
+          <div class="res-label">Lot Size</div>
+          <div class="res-val gold" id="p-lots">–<span class="res-unit">lots</span></div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Risk Amount</div>
+          <div class="res-val" id="p-riskamt">–</div>
+        </div>
+        <div class="res-card hi-r">
+          <div class="res-label">Max Loss if SL Hit</div>
+          <div class="res-val red" id="p-maxloss">–</div>
+        </div>
+        <div class="res-card hi-g">
+          <div class="res-label">Gold oz Controlled</div>
+          <div class="res-val green" id="p-oz">–<span class="res-unit">oz</span></div>
+        </div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Risk as % of account</span><span id="p-prog-lbl">–</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="p-prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="insight" id="p-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════
+     TOOL 2: Dollar SL
+══════════════════ -->
+<div class="tool-panel" id="panel-dollar">
+  <div class="card">
+    <div class="card-title">// Position Size — Stop Loss in Dollars</div>
+    <p class="warn-box" style="margin-bottom:16px;">💡 Traders often set SL as "$X away from entry price" — this converts it to lot size automatically.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Account Balance ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="d-balance" value="10000" step="1000"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Risk Per Trade (%)</label>
+        <div class="input-wrap">
+          <input type="number" id="d-risk" value="1" step="0.1" min="0.1"/>
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Entry Price ($/oz)</label>
+        <div class="input-wrap">
+          <input type="number" id="d-entry" value="2400" step="0.1"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Stop Loss Price ($/oz)</label>
+        <div class="input-wrap">
+          <input type="number" id="d-stop" value="2390" step="0.1"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcDollar(); trackCalc('xau_dollar_sl')">⚖️ CALCULATE POSITION SIZE</button>
+    <div class="results" id="dollar-results">
+      <div class="res-grid">
+        <div class="res-card hi">
+          <div class="res-label">Lot Size</div>
+          <div class="res-val gold" id="d-lots">–<span class="res-unit">lots</span></div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">SL Distance</div>
+          <div class="res-val" id="d-dist">–</div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">SL in Pips</div>
+          <div class="res-val blue" id="d-pips">–<span class="res-unit">pips</span></div>
+        </div>
+        <div class="res-card hi-r">
+          <div class="res-label">Max Loss</div>
+          <div class="res-val red" id="d-maxloss">–</div>
+        </div>
+      </div>
+      <div class="insight" id="d-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════
+     TOOL 3: ATR Method
+══════════════════ -->
+<div class="tool-panel" id="panel-atr">
+  <div class="card">
+    <div class="card-title">// Position Size — ATR-Based Stop Loss</div>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px;">Used in algorithmic trading (EA). ATR gives volatility-adjusted SL — ideal for Gold which moves 100–300 pips/day.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Account Balance ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="a-balance" value="10000" step="1000"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Risk Per Trade (%)</label>
+        <div class="input-wrap">
+          <input type="number" id="a-risk" value="1" step="0.1" min="0.1"/>
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">ATR(14) Value (pips)</label>
+        <div class="input-wrap">
+          <input type="number" id="a-atr" value="150" step="1" min="1"/>
+          <span class="suffix">pip</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">ATR Multiplier</label>
+        <select class="sinput" id="a-mult">
+          <option value="1.0">1.0× — Tight</option>
+          <option value="1.5" selected>1.5× — Standard</option>
+          <option value="2.0">2.0× — Wide</option>
+          <option value="2.5">2.5× — Very Wide</option>
+        </select>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcATR(); trackCalc('xau_atr')">⚖️ CALCULATE ATR POSITION SIZE</button>
+    <div class="results" id="atr-results">
+      <div class="res-grid">
+        <div class="res-card hi">
+          <div class="res-label">Lot Size</div>
+          <div class="res-val gold" id="a-lots">–<span class="res-unit">lots</span></div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">ATR Stop (pips)</div>
+          <div class="res-val blue" id="a-atrstop">–<span class="res-unit">pips</span></div>
+        </div>
+        <div class="res-card hi-r">
+          <div class="res-label">Max Loss</div>
+          <div class="res-val red" id="a-loss">–</div>
+        </div>
+        <div class="res-card hi-g">
+          <div class="res-label">Risk Amount</div>
+          <div class="res-val green" id="a-riskamt">–</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Multiplier</th><th>SL (pips)</th><th>Lot Size</th><th>Max Loss</th></tr></thead>
+        <tbody id="atr-table"></tbody>
+      </table>
+      <div class="insight" id="a-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════
+     TOOL 4: R:R Table
+══════════════════ -->
+<div class="tool-panel" id="panel-rr">
+  <div class="card">
+    <div class="card-title">// Risk/Reward Table — Gold</div>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Lot Size</label>
+        <div class="input-wrap">
+          <input type="number" id="r-lots" value="0.10" step="0.01" min="0.01"/>
+          <span class="suffix">lot</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Stop Loss (pips)</label>
+        <div class="input-wrap">
+          <input type="number" id="r-sl" value="100" step="1" min="1"/>
+          <span class="suffix">pip</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">THB Exchange Rate</label>
+        <div class="input-wrap">
+          <input type="number" id="r-thb" value="35.8" step="0.1"/>
+          <span class="suffix">฿/$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Account Balance ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="r-balance" value="10000" step="1000"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcRR(); trackCalc('xau_rr_table')">⚖️ GENERATE R:R TABLE</button>
+    <div class="results" id="rr-results">
+      <div class="res-grid">
+        <div class="res-card hi-r">
+          <div class="res-label">Max Risk (SL hit)</div>
+          <div class="res-val red" id="r-maxrisk">–</div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Max Risk (THB)</div>
+          <div class="res-val" id="r-maxrisk-thb">–</div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Risk % of Account</div>
+          <div class="res-val gold" id="r-riskpct">–<span class="res-unit">%</span></div>
+        </div>
+        <div class="res-card hi-g">
+          <div class="res-label">Best R:R Payout (1:3)</div>
+          <div class="res-val green" id="r-best">–</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>R:R Ratio</th>
+            <th>TP (pips)</th>
+            <th>Win ($)</th>
+            <th>Win (฿)</th>
+            <th>Loss ($)</th>
+            <th>Win Rate Needed</th>
+          </tr>
+        </thead>
+        <tbody id="rr-table"></tbody>
+      </table>
+      <div class="insight" id="r-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Ad rect -->
+<div class="ad-slot ad-rect">AD SLOT · 300×250 — Google AdSense</div>
+
+<!-- Affiliate -->
+<div class="aff-strip">
+  <div>
+    <p><strong>Trade XAU/USD with RAW spreads</strong></p>
+    <p style="font-size:12px;margin-top:4px;">ECN execution · No dealing desk · Fast withdrawals to Thai banks</p>
+  </div>
+  <a href="#" class="aff-btn" onclick="trackAffiliate('pepperstone_gold')">Open Gold Account →</a>
+</div>
+
+<!-- SEO Content -->
+<div class="info-section">
+  <div style="margin-bottom:12px;">
+    <span class="tag">XAU/USD</span>
+    <span class="tag">100 oz/lot</span>
+    <span class="tag">ATR Method</span>
+    <span class="tag">FTMO Ready</span>
+    <span class="tag">THB Convert</span>
+  </div>
+  <h2>XAU/USD Gold Position Size Calculator</h2>
+  <p>Gold (XAU/USD) has unique specifications compared to regular forex pairs. One standard lot = 100 troy ounces. One pip = $0.01 per ounce = $1.00 per standard lot. This is significantly different from EUR/USD where 1 pip = $10/lot.</p>
+  <p>Getting position size wrong on gold is one of the most common mistakes traders make, especially those transitioning from forex. Gold's daily range of 100–300+ pips means an oversized position can wipe your FTMO daily limit in a single candle.</p>
+
+  <h2 style="margin-top:28px;">Frequently Asked Questions</h2>
+  <div class="faq-item">
+    <div class="faq-q">What is the pip value for XAU/USD gold?</div>
+    <div class="faq-a">For XAU/USD: 1 pip = $0.01 per ounce. Since 1 standard lot = 100 oz, the pip value = $0.01 × 100 = $1.00 per pip per standard lot. This is much lower than EUR/USD ($10/pip/lot). For a mini lot (0.1), pip value = $0.10. For a micro lot (0.01), pip value = $0.01.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Why does gold need a larger SL than forex pairs?</div>
+    <div class="faq-a">Gold's average daily range (ATR) is typically 100–300 pips, compared to EUR/USD at 70–120 pips. Setting a 20-pip SL on gold means you will be stopped out frequently by normal price noise. A typical ATR-based SL for gold is 150–250 pips (1.0–1.5× ATR), which in dollar terms is only $1.50–$2.50 per mini lot — still very manageable with proper position sizing.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">How does ATR-based position sizing work for gold?</div>
+    <div class="faq-a">ATR (Average True Range) measures volatility. Setting SL at 1.5× ATR means your stop is 1.5 standard deviations of recent volatility away, reducing the chance of being stopped by noise. For gold ATR(14) of 150 pips: SL = 1.5 × 150 = 225 pips = $2.25 per mini lot. With $10,000 account and 1% risk ($100), safe lots = $100 ÷ (225 × $1) = 0.44 lots.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">What lot size is safe for gold on FTMO $10,000?</div>
+    <div class="faq-a">For FTMO $10,000 with 1% risk per trade: Risk amount = $100. With typical gold SL of 100 pips: Safe lots = $100 ÷ (100 × $1) = 1.0 lot. With 200-pip SL: 0.50 lots. Always keep your daily total risk well under 5% ($500) as FTMO's daily loss limit applies to the entire day's P&L including floating losses.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">What R:R ratio should I use for gold trading?</div>
+    <div class="faq-a">Most professional gold traders use minimum 1:1.5 or 1:2 R:R. With gold's high volatility, targets of 150–400 pips are common when SL is 100–200 pips. A 1:2 ratio means you only need to be right 34% of the time to break even. For EA/algorithmic trading, backtesting should confirm that the average winner is at least 1.5× the average loser.</div>
+  </div>
+</div>
+
+<p class="disclaimer">* Gold specifications: 1 lot = 100 troy oz, pip = $0.01/oz, pip value = $1.00/lot. Calculations assume standard broker specs. Verify with your broker. Not financial advice.</p>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 GoldPosition.com · Free XAU/USD Tools</p>
+    <div class="footer-links">
+      <a href="#">Pip Calculator</a>
+      <a href="#">FTMO Calc</a>
+      <a href="#">Thai Dividend</a>
+      <a href="#">Lot Size Calc</a>
+      <a href="#">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+</div>
+
+<script>
+/* ── Helpers ── */
+function fmt(n){
+  const abs = Math.abs(n);
+  if(abs >= 1000) return '$' + n.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});
+  return '$' + n.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function fmtN(n,d=2){return n.toFixed(d);}
+
+/* ── Tab ── */
+function switchTab(name){
+  document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+/* ══ GOLD CONSTANTS ══
+   1 lot = 100 oz
+   pip size = 0.01 (1 pip = $0.01/oz)
+   pip value per lot = 0.01 × 100 = $1.00
+*/
+const PIP_VAL = 1.0; // $1 per pip per standard lot
+
+/* ══ Tool 1: Pip SL ══ */
+function calcPip(){
+  const balance = parseFloat(document.getElementById('p-balance').value) || 0;
+  const riskPct = parseFloat(document.getElementById('p-risk').value)    || 1;
+  const slPips  = parseFloat(document.getElementById('p-sl').value)      || 100;
+  const price   = parseFloat(document.getElementById('p-price').value)   || 2400;
+
+  const riskAmt = balance * (riskPct/100);
+  const lots    = riskAmt / (slPips * PIP_VAL);
+  const oz      = lots * 100;
+  const verify  = lots * slPips * PIP_VAL; // should equal riskAmt
+
+  document.getElementById('p-lots').innerHTML    = fmtN(lots,2) + '<span class="res-unit">lots</span>';
+  document.getElementById('p-riskamt').innerHTML = fmt(riskAmt);
+  document.getElementById('p-maxloss').innerHTML = '-' + fmt(verify);
+  document.getElementById('p-oz').innerHTML      = fmtN(oz,1) + '<span class="res-unit">oz</span>';
+
+  document.getElementById('p-prog-fill').style.width = Math.min(riskPct*10,100) + '%';
+  document.getElementById('p-prog-lbl').textContent  = riskPct + '% of account';
+
+  document.getElementById('p-insight').innerHTML =
+    `<strong>Formula:</strong> Lots = Risk (${fmt(riskAmt)}) ÷ (${slPips} pips × $${PIP_VAL}/pip) = <strong>${fmtN(lots,2)} lots</strong><br>
+     You control <strong>${fmtN(oz,1)} oz</strong> of gold at $${price}/oz = Notional value $${(lots*100*price).toLocaleString('en',{maximumFractionDigits:0})}<br>
+     ${riskPct <= 1 ? '<span class="ok">✅ Conservative — good for FTMO challenges.</span>' : riskPct <= 2 ? '<span class="warn">⚠️ Moderate risk — ensure within FTMO daily limits.</span>' : '<span class="danger">🚨 High risk — dangerous for FTMO accounts.</span>'}`;
+
+  document.getElementById('pip-results').classList.add('show');
+}
+
+/* ══ Tool 2: Dollar SL ══ */
+function calcDollar(){
+  const balance = parseFloat(document.getElementById('d-balance').value) || 0;
+  const riskPct = parseFloat(document.getElementById('d-risk').value)    || 1;
+  const entry   = parseFloat(document.getElementById('d-entry').value)  || 2400;
+  const stop    = parseFloat(document.getElementById('d-stop').value)   || 2390;
+
+  const riskAmt = balance * (riskPct/100);
+  const dist    = Math.abs(entry - stop);          // $ per oz
+  const slPips  = dist / 0.01;                     // convert to pips
+  const lots    = riskAmt / (slPips * PIP_VAL);
+  const verify  = lots * slPips * PIP_VAL;
+
+  document.getElementById('d-lots').innerHTML   = fmtN(lots,2) + '<span class="res-unit">lots</span>';
+  document.getElementById('d-dist').innerHTML   = '$' + fmtN(dist,2) + '/oz';
+  document.getElementById('d-pips').innerHTML   = fmtN(slPips,0) + '<span class="res-unit">pips</span>';
+  document.getElementById('d-maxloss').innerHTML= '-' + fmt(verify);
+
+  document.getElementById('d-insight').innerHTML =
+    `<strong>SL Distance:</strong> $${fmtN(dist,2)}/oz = ${fmtN(slPips,0)} pips<br>
+     <strong>Formula:</strong> Lots = ${fmt(riskAmt)} ÷ (${fmtN(slPips,0)} × $1) = <strong>${fmtN(lots,2)} lots</strong><br>
+     <strong>Verification:</strong> ${fmtN(lots,2)} × ${fmtN(slPips,0)} pips × $1/pip = ${fmt(verify)} ✅`;
+
+  document.getElementById('dollar-results').classList.add('show');
+}
+
+/* ══ Tool 3: ATR ══ */
+function calcATR(){
+  const balance = parseFloat(document.getElementById('a-balance').value) || 0;
+  const riskPct = parseFloat(document.getElementById('a-risk').value)    || 1;
+  const atr     = parseFloat(document.getElementById('a-atr').value)     || 150;
+  const mult    = parseFloat(document.getElementById('a-mult').value)    || 1.5;
+
+  const riskAmt = balance * (riskPct/100);
+  const atrSL   = atr * mult;
+  const lots    = riskAmt / (atrSL * PIP_VAL);
+
+  document.getElementById('a-lots').innerHTML   = fmtN(lots,2) + '<span class="res-unit">lots</span>';
+  document.getElementById('a-atrstop').innerHTML= fmtN(atrSL,0) + '<span class="res-unit">pips</span>';
+  document.getElementById('a-loss').innerHTML   = '-' + fmt(lots * atrSL * PIP_VAL);
+  document.getElementById('a-riskamt').innerHTML= fmt(riskAmt);
+
+  const tbody = document.getElementById('atr-table');
+  tbody.innerHTML = '';
+  [1.0,1.5,2.0,2.5].forEach(m => {
+    const sl = atr * m;
+    const l  = riskAmt / (sl * PIP_VAL);
+    const cls = m === mult ? 'style="background:rgba(245,158,11,.07)"' : '';
+    tbody.innerHTML += `<tr ${cls}>
+      <td>${m}×${m===mult?' ← selected':''}</td>
+      <td>${fmtN(sl,0)} pips</td>
+      <td>${fmtN(l,2)} lots</td>
+      <td class="loss">-${fmt(l*sl*PIP_VAL)}</td>
+    </tr>`;
+  });
+
+  document.getElementById('a-insight').innerHTML =
+    `<strong>ATR SL:</strong> ${atr} × ${mult} = <strong>${fmtN(atrSL,0)} pips</strong><br>
+     Position: <strong>${fmtN(lots,2)} lots</strong> keeps risk at exactly ${fmt(riskAmt)} (${riskPct}%)<br>
+     ${atr > 200 ? '<span class="warn">⚠️ High ATR — market is very volatile. Reduce position size further.</span>' : '<span class="ok">✅ ATR-based SL avoids premature stop-outs from normal price noise.</span>'}`;
+
+  document.getElementById('atr-results').classList.add('show');
+}
+
+/* ══ Tool 4: R:R Table ══ */
+function calcRR(){
+  const lots    = parseFloat(document.getElementById('r-lots').value)    || 0.1;
+  const slPips  = parseFloat(document.getElementById('r-sl').value)      || 100;
+  const thbRate = parseFloat(document.getElementById('r-thb').value)     || 35.8;
+  const balance = parseFloat(document.getElementById('r-balance').value) || 10000;
+
+  const maxRisk  = lots * slPips * PIP_VAL;
+  const riskPct  = (maxRisk / balance) * 100;
+  const bestWin  = lots * slPips * 3 * PIP_VAL;
+
+  document.getElementById('r-maxrisk').innerHTML    = '-' + fmt(maxRisk);
+  document.getElementById('r-maxrisk-thb').innerHTML= '-฿' + Math.round(maxRisk*thbRate).toLocaleString();
+  document.getElementById('r-riskpct').innerHTML    = fmtN(riskPct,2) + '<span class="res-unit">%</span>';
+  document.getElementById('r-best').innerHTML       = '+' + fmt(bestWin);
+
+  const tbody = document.getElementById('rr-table');
+  tbody.innerHTML = '';
+  [[1,1],[1,1.5],[1,2],[1,2.5],[1,3],[1,4],[1,5]].forEach(([sl,tp]) => {
+    const tpPips = slPips * tp;
+    const win    = lots * tpPips * PIP_VAL;
+    const loss   = maxRisk;
+    const winRate = (1/(1+tp)*100); // break-even win rate
+    tbody.innerHTML += `<tr>
+      <td>1:${tp}</td>
+      <td>${fmtN(tpPips,0)}</td>
+      <td class="win">+${fmt(win)} (+฿${Math.round(win*thbRate).toLocaleString()})</td>
+      <td class="win">+฿${Math.round(win*thbRate).toLocaleString()}</td>
+      <td class="loss">-${fmt(loss)}</td>
+      <td>${fmtN(winRate,1)}%</td>
+    </tr>`;
+  });
+
+  document.getElementById('r-insight').innerHTML =
+    `<strong>${fmtN(lots,2)} lots</strong> with ${slPips}-pip SL risks <strong>${fmt(maxRisk)}</strong> = <strong>${fmtN(riskPct,2)}% of account</strong><br>
+     At 1:2 R:R, break-even win rate = <span class="ok">33.3%</span> — achievable for most traders<br>
+     At 1:3 R:R, break-even win rate = <span class="ok">25.0%</span> — very favorable odds<br>
+     ${riskPct > 2 ? '<span class="danger">🚨 Risk exceeds 2% — reduce lot size for FTMO safety.</span>' : '<span class="ok">✅ Risk within safe range for FTMO.</span>'}`;
+
+  document.getElementById('rr-results').classList.add('show');
+}
+
+/* ── FAQ ── */
+document.querySelectorAll('.faq-q').forEach(q=>{
+  q.addEventListener('click',()=>{q.classList.toggle('open');q.nextElementSibling.classList.toggle('open');});
+});
+
+/* Gold price display */
+document.getElementById('p-price').addEventListener('input', function(){
+  document.getElementById('gold-price-display').textContent = '$' + parseFloat(this.value||0).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+});
+</script>
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "XAU/USD Gold Position Size Calculator",
+  "description": "Free gold position size calculator for XAU/USD. Three methods: pip SL, dollar SL, and ATR-based. Includes R:R table with THB conversion. FTMO ready.",
+  "url": "https://gold-position.com",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "offers": {"@type":"Offer","price":"0","priceCurrency":"USD"}
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forex Risk Reward Calculator — R:R Ratio, Win Rate & Expected Value</title>
+  <meta name="description" content="Free forex risk/reward ratio calculator. Calculate R:R, minimum win rate needed, expected value, and trade probability. Supports long and short trades on all pairs including XAU/USD."/>
+  <meta name="keywords" content="forex risk reward calculator, risk reward ratio forex, expected value calculator trading, win rate calculator forex, RR ratio calculator"/>
+  <link rel="canonical" href="https://rr-forex.com/"/>
+  <meta property="og:title" content="Forex Risk/Reward Calculator — R:R, Win Rate & EV"/>
+  <meta property="og:type" content="website"/>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());gtag('config','G-XXXXXXXXXX');
+    function trackCalc(n){gtag('event','calculator_used',{'event_category':'engagement','event_label':n});}
+    function trackAffiliate(n){gtag('event','affiliate_click',{'event_category':'monetization','event_label':n});}
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --bg:       #fdfcf8;
+      --surface:  #f5f2eb;
+      --card:     #ffffff;
+      --border:   #e0d8cc;
+      --ink:      #1a1714;
+      --red:      #c0392b;
+      --green:    #1e6b3e;
+      --blue:     #1a3a6b;
+      --gold:     #b8860b;
+      --muted:    #7a6f60;
+      --serif:    'Playfair Display', serif;
+      --mono:     'Source Code Pro', monospace;
+      --radius:   6px;
+      --shadow:   0 1px 8px rgba(0,0,0,.06);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:14px;line-height:1.6;}
+
+    .wrapper{max-width:860px;margin:0 auto;padding:0 20px 80px;}
+
+    /* masthead */
+    .masthead{border-bottom:3px double var(--ink);padding:20px 0 16px;margin-bottom:28px;text-align:center;}
+    .masthead-tag{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+    .masthead h1{font-family:var(--serif);font-size:clamp(26px,6vw,44px);font-weight:900;letter-spacing:-.5px;line-height:1.1;}
+    .masthead h1 em{font-style:italic;color:var(--red);}
+    .masthead-sub{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:8px;}
+
+    .ad-slot{background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);letter-spacing:1px;}
+    .ad-banner{height:90px;margin-bottom:28px;}
+    .ad-rect{height:250px;margin:28px 0;}
+
+    /* tabs */
+    .tabs{display:flex;gap:0;border-bottom:2px solid var(--ink);margin-bottom:24px;}
+    .tab-btn{background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--muted);font-family:var(--mono);font-size:12px;font-weight:600;padding:10px 20px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:1px;}
+    .tab-btn.active{border-bottom-color:var(--red);color:var(--ink);}
+    .tab-btn:hover:not(.active){color:var(--ink);}
+
+    .tool-panel{display:none;}
+    .tool-panel.active{display:block;animation:fadeIn .2s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+    /* card */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);margin-bottom:20px;}
+    .card-title{font-family:var(--serif);font-size:18px;font-weight:700;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+
+    /* form */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    @media(max-width:540px){.form-grid,.form-grid-3{grid-template-columns:1fr;}}
+
+    .field{display:flex;flex-direction:column;gap:5px;}
+    label.lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+
+    input[type=number],select.sinput{
+      background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+      color:var(--ink);font-family:var(--mono);font-size:14px;
+      padding:9px 12px;outline:none;width:100%;
+      transition:border-color .2s;
+    }
+    input:focus,select.sinput:focus{border-color:var(--ink);}
+    .input-wrap{position:relative;}
+    .input-wrap input{padding-right:44px;}
+    .suffix{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);}
+
+    .direction-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+    .dir-btn{flex:1;background:var(--surface);border:none;color:var(--muted);font-family:var(--mono);font-size:12px;font-weight:600;padding:9px;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;transition:all .15s;}
+    .dir-btn.active.long{background:var(--green);color:#fff;}
+    .dir-btn.active.short{background:var(--red);color:#fff;}
+
+    .calc-btn{margin-top:18px;width:100%;padding:12px;background:var(--ink);color:var(--bg);border:none;border-radius:var(--radius);font-family:var(--serif);font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;letter-spacing:.3px;}
+    .calc-btn:hover{opacity:.85;}
+
+    .results{display:none;margin-top:20px;}
+    .results.show{display:block;animation:fadeIn .3s ease;}
+
+    /* stat cards */
+    .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;}
+    .res-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+    .res-card.hi-r{border-left:4px solid var(--red);background:#fef9f9;}
+    .res-card.hi-g{border-left:4px solid var(--green);background:#f0fdf4;}
+    .res-card.hi-b{border-left:4px solid var(--blue);background:#f0f4ff;}
+    .res-card.hi-gold{border-left:4px solid var(--gold);background:#fffdf0;}
+
+    .res-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+    .res-val{font-family:var(--serif);font-size:24px;font-weight:700;}
+    .res-val.red{color:var(--red);}
+    .res-val.green{color:var(--green);}
+    .res-val.blue{color:var(--blue);}
+    .res-val.gold{color:var(--gold);}
+    .res-unit{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:2px;}
+
+    /* visual RR bar */
+    .rr-visual{margin-top:16px;padding:16px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);}
+    .rr-bar-wrap{display:flex;gap:4px;height:32px;margin:10px 0;}
+    .rr-bar-loss{background:var(--red);border-radius:4px 0 0 4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;min-width:30px;}
+    .rr-bar-win{background:var(--green);border-radius:0 4px 4px 0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;min-width:30px;}
+    .rr-label-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);}
+
+    /* EV table */
+    table{width:100%;border-collapse:collapse;margin-top:14px;}
+    th,td{padding:9px 12px;font-size:12px;border-bottom:1px solid var(--border);text-align:right;}
+    th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:left;background:var(--surface);}
+    td:first-child{text-align:left;}
+    tr:hover td{background:#faf8f3;}
+    .pos{color:var(--green);}
+    .neg{color:var(--red);}
+    .row-hi td{background:#f0f4ff;font-weight:700;}
+
+    /* insight */
+    .insight{margin-top:14px;background:var(--surface);border-left:3px solid var(--gold);border-radius:var(--radius);padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.8;}
+    .insight strong{color:var(--ink);}
+    .ok{color:var(--green);}
+    .warn{color:var(--gold);}
+    .danger{color:var(--red);}
+
+    /* aff */
+    .aff-strip{background:var(--ink);border-radius:var(--radius);padding:22px 26px;margin-top:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+    .aff-strip p{font-size:13px;color:rgba(255,252,240,.7);}
+    .aff-strip strong{color:#fff;}
+    .aff-btn{background:var(--bg);color:var(--ink);padding:10px 22px;border-radius:var(--radius);font-family:var(--serif);font-size:13px;font-weight:700;text-decoration:none;}
+    .aff-btn:hover{background:var(--surface);}
+
+    .info-section{margin-top:40px;}
+    .info-section h2{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:12px;}
+    .info-section p{color:var(--muted);line-height:1.8;font-size:14px;margin-bottom:12px;}
+    .faq-item{border-bottom:1px solid var(--border);padding:14px 0;}
+    .faq-q{font-family:var(--serif);font-weight:700;font-size:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+    .faq-q::after{content:'+';font-size:22px;color:var(--red);transition:transform .2s;}
+    .faq-q.open::after{transform:rotate(45deg);}
+    .faq-a{display:none;padding-top:10px;color:var(--muted);font-size:13px;line-height:1.75;}
+    .faq-a.open{display:block;}
+
+    footer{border-top:2px solid var(--ink);padding:20px 0;margin-top:48px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+    .footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+    .footer-links a{font-size:11px;color:var(--muted);text-decoration:none;}
+    .footer-links a:hover{color:var(--ink);}
+    footer p{font-size:11px;color:var(--muted);}
+    .disclaimer{font-size:10px;color:var(--muted);opacity:.6;margin-top:10px;line-height:1.6;}
+    .tag{display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:2px 8px;font-size:11px;margin:0 4px 6px 0;color:var(--muted);}
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="masthead">
+  <div class="masthead-tag">Forex Tools · Free · No Login</div>
+  <h1>Risk/<em>Reward</em><br/>Calculator</h1>
+  <div class="masthead-sub">R:R Ratio · Break-even Win Rate · Expected Value · Trade Analysis</div>
+</div>
+
+<div class="ad-slot ad-banner">AD SLOT · 728×90 — Google AdSense</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('price')">Price Method</button>
+  <button class="tab-btn" onclick="switchTab('pips')">Pip Method</button>
+  <button class="tab-btn" onclick="switchTab('ev')">Expected Value</button>
+  <button class="tab-btn" onclick="switchTab('series')">Trade Series</button>
+</div>
+
+<!-- ══ Tool 1: Price Method ══ -->
+<div class="tool-panel active" id="panel-price">
+  <div class="card">
+    <div class="card-title">Enter Entry, Stop Loss & Take Profit Price</div>
+    <div style="margin-bottom:16px;">
+      <label class="lbl" style="display:block;margin-bottom:6px;">Trade Direction</label>
+      <div class="direction-toggle">
+        <button class="dir-btn long active" id="dir-long" onclick="setDir('long')">▲ LONG (Buy)</button>
+        <button class="dir-btn short" id="dir-short" onclick="setDir('short')">▼ SHORT (Sell)</button>
+      </div>
+    </div>
+    <div class="form-grid-3">
+      <div class="field">
+        <label class="lbl">Entry Price</label>
+        <input type="number" id="pm-entry" value="1.10000" step="0.0001" min="0"/>
+      </div>
+      <div class="field">
+        <label class="lbl">Stop Loss Price</label>
+        <input type="number" id="pm-sl" value="1.09800" step="0.0001" min="0"/>
+      </div>
+      <div class="field">
+        <label class="lbl">Take Profit Price</label>
+        <input type="number" id="pm-tp" value="1.10400" step="0.0001" min="0"/>
+      </div>
+    </div>
+    <div class="form-grid" style="margin-top:14px;">
+      <div class="field">
+        <label class="lbl">Pair / Pip Size</label>
+        <select class="sinput" id="pm-pair">
+          <optgroup label="── Majors ──">
+            <option value="0.0001,10">EUR/USD  (pip=0.0001 · $10/lot)</option>
+            <option value="0.0001,10">GBP/USD  (pip=0.0001 · $10/lot)</option>
+            <option value="0.01,6.7">USD/JPY  (pip=0.01 · ~$6.70/lot)</option>
+            <option value="0.0001,11.1">USD/CHF  (pip=0.0001 · ~$11.10/lot)</option>
+            <option value="0.0001,10">AUD/USD  (pip=0.0001 · $10/lot)</option>
+            <option value="0.0001,10">NZD/USD  (pip=0.0001 · $10/lot)</option>
+            <option value="0.0001,7.4">USD/CAD  (pip=0.0001 · ~$7.40/lot)</option>
+          </optgroup>
+          <optgroup label="── JPY Crosses ──">
+            <option value="0.01,6.7">EUR/JPY  (pip=0.01 · ~$6.70/lot)</option>
+            <option value="0.01,6.7">GBP/JPY  (pip=0.01 · ~$6.70/lot)</option>
+            <option value="0.01,6.7">AUD/JPY  (pip=0.01 · ~$6.70/lot)</option>
+            <option value="0.01,6.7">CAD/JPY  (pip=0.01 · ~$6.70/lot)</option>
+            <option value="0.01,6.7">CHF/JPY  (pip=0.01 · ~$6.70/lot)</option>
+          </optgroup>
+          <optgroup label="── EUR Crosses ──">
+            <option value="0.0001,10">EUR/GBP  (pip=0.0001 · ~$12.70/lot)</option>
+            <option value="0.0001,11.1">EUR/CHF  (pip=0.0001 · ~$11.10/lot)</option>
+            <option value="0.0001,10">EUR/AUD  (pip=0.0001 · ~$10/lot)</option>
+            <option value="0.0001,10">EUR/CAD  (pip=0.0001 · ~$10/lot)</option>
+            <option value="0.0001,10">GBP/AUD  (pip=0.0001 · ~$10/lot)</option>
+            <option value="0.0001,10">GBP/CAD  (pip=0.0001 · ~$10/lot)</option>
+            <option value="0.0001,11.1">GBP/CHF  (pip=0.0001 · ~$11.10/lot)</option>
+          </optgroup>
+          <optgroup label="── Metals ──">
+            <option value="0.01,1">XAU/USD Gold   (pip=0.01 · $1/lot · 100oz)</option>
+            <option value="0.001,5">XAG/USD Silver (pip=0.001 · $5/lot · 5000oz)</option>
+          </optgroup>
+          <optgroup label="── Indices ──">
+            <option value="1,1">US30 / DOW  (pip=1 · $1/lot)</option>
+            <option value="0.25,0.25">NAS100 / NASDAQ (pip=0.25)</option>
+            <option value="0.1,0.1">SPX500 / S&amp;P 500 (pip=0.1)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl">Position Size (lots)</label>
+        <div class="input-wrap">
+          <input type="number" id="pm-lots" value="1.00" step="0.01" min="0.01"/>
+          <span class="suffix">lots</span>
+        </div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcPrice(); trackCalc('rr_price')">CALCULATE RISK/REWARD</button>
+    <div class="results" id="price-results">
+      <div class="res-grid">
+        <div class="res-card hi-b">
+          <div class="res-label">R:R Ratio</div>
+          <div class="res-val blue" id="pm-rr">–</div>
+        </div>
+        <div class="res-card hi-r">
+          <div class="res-label">Risk (SL pips)</div>
+          <div class="res-val red" id="pm-slpips">–<span class="res-unit">pips</span></div>
+        </div>
+        <div class="res-card hi-g">
+          <div class="res-label">Reward (TP pips)</div>
+          <div class="res-val green" id="pm-tppips">–<span class="res-unit">pips</span></div>
+        </div>
+        <div class="res-card hi-gold">
+          <div class="res-label">Break-even Win Rate</div>
+          <div class="res-val gold" id="pm-be">–<span class="res-unit">%</span></div>
+        </div>
+      </div>
+      <div class="res-grid" style="margin-top:10px;">
+        <div class="res-card hi-r">
+          <div class="res-label">Max Loss</div>
+          <div class="res-val red" id="pm-loss">–</div>
+        </div>
+        <div class="res-card hi-g">
+          <div class="res-label">Max Profit</div>
+          <div class="res-val green" id="pm-profit">–</div>
+        </div>
+      </div>
+      <!-- Visual bar -->
+      <div class="rr-visual">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Risk vs Reward Visual</div>
+        <div class="rr-bar-wrap">
+          <div class="rr-bar-loss" id="pm-bar-loss" style="width:33%">SL</div>
+          <div class="rr-bar-win" id="pm-bar-win" style="width:67%">TP</div>
+        </div>
+        <div class="rr-label-row">
+          <span id="pm-bar-loss-lbl">–</span>
+          <span id="pm-bar-win-lbl">–</span>
+        </div>
+      </div>
+      <div class="insight" id="pm-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Tool 2: Pip Method ══ -->
+<div class="tool-panel" id="panel-pips">
+  <div class="card">
+    <div class="card-title">Enter Risk & Reward in Pips Directly</div>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Stop Loss (pips)</label>
+        <div class="input-wrap">
+          <input type="number" id="pp-sl" value="20" step="1" min="1"/>
+          <span class="suffix">pip</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Take Profit (pips)</label>
+        <div class="input-wrap">
+          <input type="number" id="pp-tp" value="40" step="1" min="1"/>
+          <span class="suffix">pip</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Position Size (lots)</label>
+        <div class="input-wrap">
+          <input type="number" id="pp-lots" value="1.00" step="0.01"/>
+          <span class="suffix">lots</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Pip Value ($/lot)</label>
+        <select class="sinput" id="pp-pipval">
+          <optgroup label="── Majors ──">
+            <option value="10">EUR/USD, GBP/USD, AUD/USD, NZD/USD  ($10/lot)</option>
+            <option value="6.7">USD/JPY  (~$6.70/lot)</option>
+            <option value="11.1">USD/CHF  (~$11.10/lot)</option>
+            <option value="7.4">USD/CAD  (~$7.40/lot)</option>
+          </optgroup>
+          <optgroup label="── JPY Crosses ──">
+            <option value="6.7">EUR/JPY, GBP/JPY, AUD/JPY, CAD/JPY  (~$6.70/lot)</option>
+          </optgroup>
+          <optgroup label="── EUR/GBP Crosses ──">
+            <option value="12.7">EUR/GBP  (~$12.70/lot)</option>
+            <option value="11.1">EUR/CHF, GBP/CHF  (~$11.10/lot)</option>
+            <option value="10">EUR/AUD, EUR/CAD, GBP/AUD, GBP/CAD  (~$10/lot)</option>
+          </optgroup>
+          <optgroup label="── Metals ──">
+            <option value="1">XAU/USD Gold  ($1/lot · 100oz)</option>
+            <option value="5">XAG/USD Silver  ($5/lot · 5000oz)</option>
+          </optgroup>
+          <optgroup label="── Indices ──">
+            <option value="1">US30 / DOW  ($1/lot)</option>
+            <option value="0.25">NAS100  ($0.25/lot)</option>
+            <option value="0.1">SPX500  ($0.10/lot)</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcPips(); trackCalc('rr_pips')">CALCULATE R:R</button>
+    <div class="results" id="pips-results">
+      <div class="res-grid">
+        <div class="res-card hi-b">
+          <div class="res-label">R:R Ratio</div>
+          <div class="res-val blue" id="pp-rr">–</div>
+        </div>
+        <div class="res-card hi-gold">
+          <div class="res-label">Break-even Win Rate</div>
+          <div class="res-val gold" id="pp-be">–<span class="res-unit">%</span></div>
+        </div>
+        <div class="res-card hi-r">
+          <div class="res-label">Loss if SL</div>
+          <div class="res-val red" id="pp-loss">–</div>
+        </div>
+        <div class="res-card hi-g">
+          <div class="res-label">Profit if TP</div>
+          <div class="res-val green" id="pp-profit">–</div>
+        </div>
+      </div>
+      <div class="insight" id="pp-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Tool 3: Expected Value ══ -->
+<div class="tool-panel" id="panel-ev">
+  <div class="card">
+    <div class="card-title">Expected Value (EV) — Is Your Strategy Profitable?</div>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Win Amount per trade ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="ev-win" value="200" step="10"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Loss Amount per trade ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="ev-loss" value="100" step="10"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Your Actual Win Rate (%)</label>
+        <div class="input-wrap">
+          <input type="number" id="ev-winrate" value="45" step="1" min="1" max="99"/>
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Trades Per Month</label>
+        <input type="number" id="ev-trades" value="20" step="1" min="1"/>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcEV(); trackCalc('rr_ev')">CALCULATE EXPECTED VALUE</button>
+    <div class="results" id="ev-results">
+      <div class="res-grid">
+        <div class="res-card hi-b">
+          <div class="res-label">EV per Trade</div>
+          <div class="res-val" id="ev-pertrade">–</div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Monthly EV</div>
+          <div class="res-val" id="ev-monthly">–</div>
+        </div>
+        <div class="res-card hi-gold">
+          <div class="res-label">Break-even Win Rate</div>
+          <div class="res-val gold" id="ev-be">–<span class="res-unit">%</span></div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">R:R Ratio</div>
+          <div class="res-val" id="ev-rr">–</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Win Rate</th><th>EV/Trade</th><th>Monthly (${document.getElementById?'':''} trades)</th><th>Annual</th></tr></thead>
+        <tbody id="ev-table"></tbody>
+      </table>
+      <div class="insight" id="ev-insight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Tool 4: Trade Series ══ -->
+<div class="tool-panel" id="panel-series">
+  <div class="card">
+    <div class="card-title">Trade Series Simulator — Probability of Outcomes</div>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl">Account Balance ($)</label>
+        <div class="input-wrap">
+          <input type="number" id="ts-balance" value="10000" step="1000"/>
+          <span class="suffix">$</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Risk Per Trade (%)</label>
+        <div class="input-wrap">
+          <input type="number" id="ts-risk" value="1" step="0.1"/>
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">R:R Ratio (1:X)</label>
+        <div class="input-wrap">
+          <input type="number" id="ts-rr" value="2" step="0.5" min="0.5"/>
+          <span class="suffix">:1</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">Win Rate (%)</label>
+        <div class="input-wrap">
+          <input type="number" id="ts-wr" value="45" step="1" min="1" max="99"/>
+          <span class="suffix">%</span>
+        </div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcSeries(); trackCalc('rr_series')">SIMULATE 20 TRADES</button>
+    <div class="results" id="series-results">
+      <div class="res-grid">
+        <div class="res-card hi-b">
+          <div class="res-label">Expected Final Balance</div>
+          <div class="res-val blue" id="ts-final">–</div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Expected P&L</div>
+          <div class="res-val" id="ts-pnl">–</div>
+        </div>
+        <div class="res-card hi-gold">
+          <div class="res-label">Break-even Win Rate</div>
+          <div class="res-val gold" id="ts-be">–<span class="res-unit">%</span></div>
+        </div>
+        <div class="res-card">
+          <div class="res-label">Worst-case Drawdown</div>
+          <div class="res-val" id="ts-dd">–</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Trade</th><th>Result</th><th>P&L</th><th>Balance</th></tr></thead>
+        <tbody id="ts-table"></tbody>
+      </table>
+      <div class="insight" id="ts-insight"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ad-slot ad-rect">AD SLOT · 300×250 — Google AdSense</div>
+
+<div class="aff-strip">
+  <div>
+    <p><strong>Trade with a strategy that has positive expected value</strong></p>
+    <p style="font-size:12px;margin-top:4px;">Tight spreads help your R:R — every pip counts</p>
+  </div>
+  <a href="#" class="aff-btn" onclick="trackAffiliate('broker_rr_calc')">Start Trading →</a>
+</div>
+
+<div class="info-section">
+  <div style="margin-bottom:12px;">
+    <span class="tag">Free</span><span class="tag">Price & Pip Methods</span>
+    <span class="tag">Expected Value</span><span class="tag">Trade Simulator</span>
+  </div>
+  <h2>Why Risk/Reward Ratio Matters</h2>
+  <p>Risk/reward ratio is the foundation of every profitable trading strategy. A 1:2 R:R means your potential profit is twice your potential loss. With 1:2, you only need to win 34% of trades to break even — meaning you can be wrong most of the time and still be profitable.</p>
+  <p>Most professional traders focus more on R:R than win rate. A strategy with 40% win rate and 1:2 R:R outperforms a 60% win rate strategy with 1:0.8 R:R over the long term.</p>
+
+  <h2 style="margin-top:28px;">FAQ</h2>
+  <div class="faq-item">
+    <div class="faq-q">What is a good risk/reward ratio?</div>
+    <div class="faq-a">A minimum of 1:1.5 is recommended, with 1:2 being the standard for most strategies. At 1:2, you break even with just 33% win rate. Higher R:R ratios (1:3, 1:5) allow lower win rates and are preferred by swing and position traders who use wider stops and larger targets.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">What is expected value (EV) in trading?</div>
+    <div class="faq-a">EV = (Win Rate × Average Win) - (Loss Rate × Average Loss). A positive EV means the strategy is mathematically profitable over many trades. For example: 45% win rate, $200 win, $100 loss → EV = (0.45 × $200) - (0.55 × $100) = $90 - $55 = +$35 per trade.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">How does R:R apply to FTMO challenges?</div>
+    <div class="faq-a">For FTMO with 10% profit target and 10% max drawdown: you need a positive EV strategy. A 1:2 R:R with 40% win rate gives EV > 0. Combined with 1% risk per trade, you need ~25 winning trades on average to reach the 10% target — achievable in 4–8 weeks of active trading.</div>
+  </div>
+</div>
+
+<p class="disclaimer">* All calculations assume fixed position sizes and do not account for compounding, spread costs, or slippage. Backtesting with historical data is always recommended before live trading.</p>
+
+<footer>
+  <p>© 2026 RR-Forex.com · Free Risk/Reward Tools</p>
+  <div class="footer-links">
+    <a href="#">Pip Calc</a><a href="#">FTMO Calc</a>
+    <a href="#">Lot Size</a><a href="#">Gold Position</a><a href="#">Thai Dividend</a>
+  </div>
+</footer>
+</div>
+
+<script>
+let direction='long';
+function setDir(d){
+  direction=d;
+  document.getElementById('dir-long').classList.toggle('active',d==='long');
+  document.getElementById('dir-short').classList.toggle('active',d==='short');
+}
+function fmt(n){return (n>=0?'+':'')+'$'+Math.abs(n).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtAbs(n){return '$'+Math.abs(n).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtN(n,d=2){return n.toFixed(d);}
+function switchTab(name){
+  document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+/* Tool 1: Price */
+function calcPrice(){
+  const entry=parseFloat(document.getElementById('pm-entry').value)||0;
+  const sl=parseFloat(document.getElementById('pm-sl').value)||0;
+  const tp=parseFloat(document.getElementById('pm-tp').value)||0;
+  const pairVals=document.getElementById('pm-pair').value.split(',');
+  const pipSize=parseFloat(pairVals[0]);
+  const pipVal=parseFloat(pairVals[1]);
+  const lots=parseFloat(document.getElementById('pm-lots').value)||1;
+
+  const slPips=Math.abs(entry-sl)/pipSize;
+  const tpPips=Math.abs(tp-entry)/pipSize;
+  const rr=tpPips/slPips;
+  const beWR=(1/(1+rr))*100;
+  const loss=lots*slPips*pipVal;
+  const profit=lots*tpPips*pipVal;
+
+  document.getElementById('pm-rr').innerHTML='1:'+fmtN(rr,2);
+  document.getElementById('pm-slpips').innerHTML=fmtN(slPips,1)+'<span class="res-unit">pips</span>';
+  document.getElementById('pm-tppips').innerHTML=fmtN(tpPips,1)+'<span class="res-unit">pips</span>';
+  document.getElementById('pm-be').innerHTML=fmtN(beWR,1)+'<span class="res-unit">%</span>';
+  document.getElementById('pm-loss').innerHTML='-'+fmtAbs(loss);
+  document.getElementById('pm-profit').innerHTML='+'+fmtAbs(profit);
+
+  // Visual bar
+  const lossW=Math.round(1/(1+rr)*100);
+  const winW=100-lossW;
+  document.getElementById('pm-bar-loss').style.width=lossW+'%';
+  document.getElementById('pm-bar-loss').textContent='SL '+fmtN(slPips,0)+'p';
+  document.getElementById('pm-bar-win').style.width=winW+'%';
+  document.getElementById('pm-bar-win').textContent='TP '+fmtN(tpPips,0)+'p';
+  document.getElementById('pm-bar-loss-lbl').textContent='-'+fmtAbs(loss);
+  document.getElementById('pm-bar-win-lbl').textContent='+'+fmtAbs(profit);
+
+  document.getElementById('pm-insight').innerHTML=
+    `<strong>R:R = 1:${fmtN(rr,2)}</strong> — Break-even win rate: <strong>${fmtN(beWR,1)}%</strong><br>
+     SL: ${fmtN(slPips,1)} pips (-${fmtAbs(loss)}) | TP: ${fmtN(tpPips,1)} pips (+${fmtAbs(profit)})<br>
+     ${rr>=2?'<span class="ok">✅ Excellent R:R — profitable even if you win less than 34% of trades.</span>':rr>=1.5?'<span class="ok">✅ Good R:R — standard for most strategies.</span>':rr>=1?'<span class="warn">⚠️ Acceptable R:R — but need >50% win rate to be profitable.</span>':'<span class="danger">🚨 Poor R:R — avoid this setup. Move TP further or SL tighter.</span>'}`;
+
+  document.getElementById('price-results').classList.add('show');
+}
+
+/* Tool 2: Pips */
+function calcPips(){
+  const sl=parseFloat(document.getElementById('pp-sl').value)||1;
+  const tp=parseFloat(document.getElementById('pp-tp').value)||1;
+  const lots=parseFloat(document.getElementById('pp-lots').value)||1;
+  const pipVal=parseFloat(document.getElementById('pp-pipval').value)||10;
+
+  const rr=tp/sl;
+  const beWR=(1/(1+rr))*100;
+  const loss=lots*sl*pipVal;
+  const profit=lots*tp*pipVal;
+
+  document.getElementById('pp-rr').innerHTML='1:'+fmtN(rr,2);
+  document.getElementById('pp-be').innerHTML=fmtN(beWR,1)+'<span class="res-unit">%</span>';
+  document.getElementById('pp-loss').innerHTML='-'+fmtAbs(loss);
+  document.getElementById('pp-profit').innerHTML='+'+fmtAbs(profit);
+
+  document.getElementById('pp-insight').innerHTML=
+    `<strong>${sl} pip SL</strong> / <strong>${tp} pip TP</strong> = R:R 1:${fmtN(rr,2)}<br>
+     Break-even: win <strong>${fmtN(beWR,1)}%</strong> of trades to not lose money<br>
+     ${rr>=2?'<span class="ok">✅ Strong setup.</span>':rr>=1?'<span class="warn">⚠️ OK, but consider widening TP for better odds.</span>':'<span class="danger">🚨 Negative expectancy. Do not take this trade.</span>'}`;
+
+  document.getElementById('pips-results').classList.add('show');
+}
+
+/* Tool 3: EV */
+function calcEV(){
+  const winAmt=parseFloat(document.getElementById('ev-win').value)||200;
+  const lossAmt=parseFloat(document.getElementById('ev-loss').value)||100;
+  const winRate=parseFloat(document.getElementById('ev-winrate').value)||45;
+  const tradesPerMonth=parseFloat(document.getElementById('ev-trades').value)||20;
+
+  const wr=winRate/100;
+  const ev=(wr*winAmt)-((1-wr)*lossAmt);
+  const monthlyEV=ev*tradesPerMonth;
+  const beWR=lossAmt/(winAmt+lossAmt)*100;
+  const rr=winAmt/lossAmt;
+
+  const evEl=document.getElementById('ev-pertrade');
+  evEl.innerHTML=(ev>=0?'+':'')+fmtAbs(ev);
+  evEl.className='res-val '+(ev>=0?'green':'red');
+
+  const mEl=document.getElementById('ev-monthly');
+  mEl.innerHTML=(monthlyEV>=0?'+':'')+fmtAbs(monthlyEV);
+  mEl.className='res-val '+(monthlyEV>=0?'green':'red');
+
+  document.getElementById('ev-be').innerHTML=fmtN(beWR,1)+'<span class="res-unit">%</span>';
+  document.getElementById('ev-rr').innerHTML='1:'+fmtN(rr,2);
+
+  const tbody=document.getElementById('ev-table');
+  tbody.innerHTML='';
+  [30,35,40,45,50,55,60].forEach(w=>{
+    const e=(w/100*winAmt)-((1-w/100)*lossAmt);
+    const m=e*tradesPerMonth;
+    const hi=w===winRate?'class="row-hi"':'';
+    tbody.innerHTML+=`<tr ${hi}>
+      <td>${w}%${w===winRate?' ← your rate':''}</td>
+      <td class="${e>=0?'pos':'neg'}">${e>=0?'+':''}${fmtAbs(e)}</td>
+      <td class="${m>=0?'pos':'neg'}">${m>=0?'+':''}${fmtAbs(m)}</td>
+      <td class="${m*12>=0?'pos':'neg'}">${m*12>=0?'+':''}${fmtAbs(m*12)}</td>
+    </tr>`;
+  });
+
+  document.getElementById('ev-insight').innerHTML=
+    `EV = (${winRate}% × $${winAmt}) - (${100-winRate}% × $${lossAmt}) = <strong>${fmt(ev)} per trade</strong><br>
+     ${tradesPerMonth} trades/month = <strong>${fmt(monthlyEV)}/month</strong> | <strong>${fmt(monthlyEV*12)}/year</strong><br>
+     ${ev>0?'<span class="ok">✅ Positive EV — this strategy is mathematically profitable.</span>':'<span class="danger">🚨 Negative EV — this setup loses money long-term. Improve R:R or win rate.</span>'}`;
+
+  document.getElementById('ev-results').classList.add('show');
+}
+
+/* Tool 4: Series */
+function calcSeries(){
+  const balance=parseFloat(document.getElementById('ts-balance').value)||10000;
+  const riskPct=parseFloat(document.getElementById('ts-risk').value)||1;
+  const rr=parseFloat(document.getElementById('ts-rr').value)||2;
+  const wr=parseFloat(document.getElementById('ts-wr').value)/100||0.45;
+
+  const beWR=(1/(1+rr))*100;
+  const riskAmt=balance*(riskPct/100);
+  const winAmt=riskAmt*rr;
+
+  // Deterministic simulation: alternating wins/losses based on win rate
+  let bal=balance;
+  let maxDD=0, peak=balance;
+  const tbody=document.getElementById('ts-table');
+  tbody.innerHTML='';
+
+  // Generate representative sequence
+  let wins=0,losses=0;
+  for(let i=1;i<=20;i++){
+    const cumWinRate=wins/i;
+    const isWin=(wins/i)<wr||(i<=5&&wins/i<wr);
+    const pnl=isWin?winAmt:-riskAmt;
+    if(isWin)wins++;else losses++;
+    bal+=pnl;
+    if(bal>peak)peak=bal;
+    const dd=(peak-bal)/peak*100;
+    if(dd>maxDD)maxDD=dd;
+    const cls=pnl>0?'pos':'neg';
+    tbody.innerHTML+=`<tr>
+      <td>#${i}</td>
+      <td>${pnl>0?'✅ Win':'❌ Loss'}</td>
+      <td class="${cls}">${pnl>0?'+':''}\$${Math.abs(pnl).toFixed(2)}</td>
+      <td>$${bal.toFixed(2)}</td>
+    </tr>`;
+  }
+
+  const pnl=bal-balance;
+  document.getElementById('ts-final').innerHTML='$'+bal.toFixed(2);
+  const pnlEl=document.getElementById('ts-pnl');
+  pnlEl.innerHTML=(pnl>=0?'+':'')+fmtAbs(pnl);
+  pnlEl.className='res-val '+(pnl>=0?'green':'red');
+  document.getElementById('ts-be').innerHTML=fmtN(beWR,1)+'<span class="res-unit">%</span>';
+  document.getElementById('ts-dd').innerHTML=fmtN(maxDD,1)+'%';
+
+  document.getElementById('ts-insight').innerHTML=
+    `R:R 1:${rr} | Win rate ${(wr*100).toFixed(0)}% | Break-even win rate: <strong>${fmtN(beWR,1)}%</strong><br>
+     After 20 trades: <strong>${fmt(pnl)}</strong> | Max drawdown: <strong>${fmtN(maxDD,1)}%</strong><br>
+     ${wr*100>beWR?'<span class="ok">✅ Win rate exceeds break-even — strategy has positive edge.</span>':'<span class="danger">🚨 Win rate below break-even — adjust R:R or improve entry criteria.</span>'}`;
+
+  document.getElementById('series-results').classList.add('show');
+}
+
+document.querySelectorAll('.faq-q').forEach(q=>{
+  q.addEventListener('click',()=>{q.classList.toggle('open');q.nextElementSibling.classList.toggle('open');});
+});
+</script>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Forex Risk Reward Calculator","description":"Free forex risk/reward ratio calculator. Calculate R:R by price or pips, expected value, break-even win rate, and trade series simulation.","url":"https://rr-forex.com","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+</body>
+</html>

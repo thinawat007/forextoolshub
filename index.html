@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ForexToolsHub — Free Professional Forex Calculators</title>
+<meta name="description" content="Free professional forex calculators: pip value, lot size, FTMO challenge tracker, XAU/USD gold position size, risk/reward. No signup required."/>
+<link rel="canonical" href="https://forextoolshub.com/"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');function track(n){gtag('event','tool_click',{event_label:n});}function trackAff(n){gtag('event','affiliate_click',{event_label:n});}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#ede8dc;--cream2:#f5f0e8;--cream3:#faf7f2;--paper:#ffffff;
+  --ink:#1c1814;--ink2:#2e2924;--dark:#1a1a1a;--dark2:#242424;
+  --yellow:#f0b90b;--yellow2:#ffd54f;--yellow3:#fff8e1;
+  --green:#2e7d32;--green2:#4caf50;--green-lt:#e8f5e9;
+  --red:#c62828;--red-lt:#ffebee;--blue:#1565c0;--blue-lt:#e3f2fd;
+  --purple:#6a1b9a;--purple-lt:#f3e5f5;--teal:#00695c;--teal-lt:#e0f2f1;
+  --muted:#9c9488;--muted2:#c4bdb4;--border:#e0d8cc;--border2:#d4cbbf;
+  --shadow:0 1px 3px rgba(28,24,20,.06),0 4px 12px rgba(28,24,20,.04);
+  --shadow2:0 2px 8px rgba(28,24,20,.1),0 8px 24px rgba(28,24,20,.07);
+  --r:10px;--r2:16px;--r3:20px;
+  --mono:'JetBrains Mono',monospace;--sans:'Plus Jakarta Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--cream);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ══ NAV ══ */
+.nav{background:rgba(237,232,220,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 24px;}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;height:56px;gap:4px;}
+.nav-brand{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.5px;margin-right:16px;flex-shrink:0;text-decoration:none;}
+.nav-brand em{color:var(--yellow);font-style:normal;}
+.nav-tabs{display:flex;gap:2px;background:rgba(28,24,20,.07);padding:4px;border-radius:30px;}
+.nav-tab{font-size:12px;font-weight:600;color:var(--muted);padding:5px 13px;border-radius:24px;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.nav-tab.active,.nav-tab:hover{background:var(--yellow);color:var(--ink);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.nav-pill{display:flex;align-items:center;gap:6px;background:var(--dark);color:var(--cream3);padding:7px 16px;border-radius:24px;font-size:12px;font-weight:600;text-decoration:none;transition:background .2s;}
+.nav-pill:hover{background:var(--ink2);}
+.nav-pill-dot{width:7px;height:7px;border-radius:50%;background:var(--green2);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.7);}}
+@media(max-width:768px){.nav-tabs{display:none;}}
+
+/* ══ HERO ══ */
+.hero{max-width:1280px;margin:0 auto;padding:48px 24px 36px;}
+.hero-top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:32px;}
+.hero-heading{font-size:clamp(30px,4vw,46px);font-weight:800;letter-spacing:-2px;line-height:1.05;}
+.hero-heading .muted{color:var(--muted);font-weight:400;}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.h-pill{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;}
+.pill-y{background:var(--yellow);color:var(--ink);}
+.pill-d{background:var(--dark);color:var(--cream2);}
+.pill-o{background:transparent;border:1.5px solid var(--border2);color:var(--ink2);}
+
+/* ══ BENTO GRID ══ */
+.bento-wrap{max-width:1280px;margin:0 auto;padding:0 24px 56px;}
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;}
+@media(max-width:1024px){.bento{grid-template-columns:repeat(6,1fr);}}
+@media(max-width:640px){.bento{grid-template-columns:1fr 1fr;}}
+
+/* Card base */
+.c{border-radius:var(--r3);padding:24px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.c-light{background:var(--cream3);border:1px solid var(--border);}
+.c-white{background:var(--paper);border:1px solid var(--border);box-shadow:var(--shadow);}
+.c-dark{background:var(--dark);color:var(--cream2);}
+.c-yellow{background:var(--yellow);}
+.c-ink{background:var(--ink);color:var(--cream2);}
+.c-green-lt{background:var(--green-lt);border:1px solid rgba(46,125,50,.15);}
+.c-blue-lt{background:var(--blue-lt);border:1px solid rgba(21,101,192,.15);}
+.c-purple-lt{background:var(--purple-lt);border:1px solid rgba(106,27,154,.15);}
+.c-teal-lt{background:var(--teal-lt);border:1px solid rgba(0,105,92,.15);}
+
+.c:hover{transform:translateY(-2px);box-shadow:var(--shadow2);}
+
+/* Spans */
+.s8{grid-column:span 8;}
+.s6{grid-column:span 6;}
+.s5{grid-column:span 5;}
+.s4{grid-column:span 4;}
+.s3{grid-column:span 3;}
+@media(max-width:1024px){.s8,.s6,.s5{grid-column:span 6;}.s4,.s3{grid-column:span 3;}}
+@media(max-width:640px){.s8,.s6,.s5,.s4,.s3{grid-column:span 2;}}
+
+/* Card internals */
+.c-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.c-label-dark{color:rgba(255,255,255,.35);}
+.c-num{font-family:var(--mono);font-size:32px;font-weight:700;letter-spacing:-1px;line-height:1;}
+.c-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-top:6px;}
+.c-desc-dark{color:rgba(255,255,255,.5);}
+.c-badge{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;margin-top:10px;}
+.badge-g{background:var(--green-lt);color:var(--green);}
+.badge-y{background:var(--yellow3);color:#7a5c00;}
+.badge-b{background:var(--blue-lt);color:var(--blue);}
+
+/* Tool cards */
+.tool-card{text-decoration:none;color:inherit;display:flex;flex-direction:column;height:100%;cursor:pointer;}
+.tc-icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:20px;margin-bottom:14px;flex-shrink:0;}
+/* Vibrant icon backgrounds */
+.ic-ftmo{background:linear-gradient(135deg,#ff6f00,#f9a825);box-shadow:0 4px 12px rgba(249,168,37,.35);}
+.ic-pip{background:linear-gradient(135deg,#1565c0,#0288d1);box-shadow:0 4px 12px rgba(21,101,192,.3);}
+.ic-gold{background:linear-gradient(135deg,#f57f17,#fdd835);box-shadow:0 4px 12px rgba(245,127,23,.35);}
+.ic-lot{background:linear-gradient(135deg,#2e7d32,#43a047);box-shadow:0 4px 12px rgba(46,125,50,.3);}
+.ic-rr{background:linear-gradient(135deg,#6a1b9a,#ab47bc);box-shadow:0 4px 12px rgba(106,27,154,.3);}
+.ic-dark-ftmo{background:linear-gradient(135deg,#ff8f00,#ffca28);box-shadow:0 4px 12px rgba(255,202,40,.25);}
+
+.tc-name{font-size:16px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px;}
+.tc-desc{font-size:13px;color:var(--muted);line-height:1.6;flex:1;}
+.tc-desc-dk{color:rgba(255,255,255,.5);}
+.tc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
+.tc-foot-dk{border-top-color:rgba(255,255,255,.08);}
+.tc-tag{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;}
+.tag-y{background:var(--yellow3);color:#7a5c00;}
+.tag-g{background:var(--green-lt);color:var(--green);}
+.tag-b{background:var(--blue-lt);color:var(--blue);}
+.tag-p{background:var(--purple-lt);color:var(--purple);}
+.tag-t{background:var(--teal-lt);color:var(--teal);}
+.tag-dk{background:rgba(240,185,11,.15);color:var(--yellow);}
+.tc-arrow{width:30px;height:30px;border-radius:8px;background:var(--yellow);display:grid;place-items:center;font-size:13px;transition:background .15s;}
+.tool-card:hover .tc-arrow{background:var(--yellow2);}
+.tc-arrow-dk{background:rgba(255,255,255,.1);color:var(--cream2);}
+.tool-card:hover .tc-arrow-dk{background:var(--yellow);color:var(--ink);}
+
+/* Pair rows */
+.pair-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+.pair-row:last-child{border:none;}
+.pr-sym{font-family:var(--mono);font-size:12px;font-weight:700;}
+.pr-val{font-family:var(--mono);font-size:12px;font-weight:700;padding:2px 8px;border-radius:5px;}
+.prv-y{background:var(--yellow3);color:#7a5c00;}
+.prv-g{background:var(--green-lt);color:var(--green);}
+.prv-b{background:var(--blue-lt);color:var(--blue);}
+
+/* Progress */
+.prog{margin-bottom:12px;}
+.prog-lbl{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:5px;}
+.prog-lbl span:last-child{font-family:var(--mono);font-weight:700;}
+.prog-bar{height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;}
+.pf-y{background:var(--yellow);}
+.pf-g{background:var(--green2);}
+.pf-r{background:#ef5350;}
+
+/* Features */
+.feat-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;}
+.feat-item:last-child{margin-bottom:0;}
+.feat-ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex-shrink:0;font-size:14px;}
+.feat-title{font-size:13px;font-weight:700;margin-bottom:2px;}
+.feat-sub{font-size:11px;color:var(--muted);line-height:1.5;}
+
+/* CTA strip */
+.cta-strip{background:var(--ink);border-radius:var(--r3);padding:32px 36px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:12px;}
+.cta-title{font-size:20px;font-weight:800;letter-spacing:-.5px;color:var(--cream3);margin-bottom:6px;}
+.cta-sub{font-size:14px;color:rgba(237,232,220,.5);}
+.cta-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.cta-btn-y{background:var(--yellow);color:var(--ink);padding:11px 24px;border-radius:24px;font-size:13px;font-weight:700;text-decoration:none;transition:background .2s;white-space:nowrap;}
+.cta-btn-y:hover{background:var(--yellow2);}
+.cta-btn-o{background:rgba(255,255,255,.1);color:var(--cream2);padding:11px 24px;border-radius:24px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;white-space:nowrap;border:1px solid rgba(255,255,255,.12);}
+.cta-btn-o:hover{background:rgba(255,255,255,.15);}
+
+/* ══ CTA CHART SECTION ══ */
+.chart-section{position:relative;background:#030b1a;overflow:hidden;min-height:500px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0;}
+#chartCv{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+.ch-dark-mid{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 80% 70% at 50% 48%,rgba(2,8,20,.88) 0%,rgba(2,8,20,.5) 55%,transparent 100%);pointer-events:none;}
+.ch-ft{position:absolute;top:0;left:0;right:0;height:150px;background:linear-gradient(to bottom,#030b1a,transparent);z-index:1;pointer-events:none;}
+.ch-fb{position:absolute;bottom:0;left:0;right:0;height:160px;background:linear-gradient(to top,#030b1a,transparent);z-index:1;pointer-events:none;}
+.ch-fl{position:absolute;top:0;left:0;bottom:0;width:80px;background:linear-gradient(to right,#030b1a,transparent);z-index:1;pointer-events:none;}
+.ch-fr{position:absolute;top:0;right:0;bottom:0;width:80px;background:linear-gradient(to left,#030b1a,transparent);z-index:1;pointer-events:none;}
+.ch-body{position:relative;z-index:20;text-align:center;max-width:520px;padding:20px 24px 0;margin:0 auto;}
+.ch-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(240,185,11,.12);border:1.5px solid rgba(240,185,11,.35);border-radius:30px;padding:6px 16px;font-size:11px;font-weight:700;color:#f0b90b;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;}
+.ch-dot{width:7px;height:7px;background:#f0b90b;border-radius:50%;animation:blink 2s ease-in-out infinite;}
+.ch-h{font-family:Georgia,serif;font-style:italic;font-size:clamp(26px,5vw,42px);font-weight:400;color:#fff;line-height:1.1;letter-spacing:-1px;margin:0 0 12px;text-shadow:0 2px 16px rgba(0,0,0,.8);}
+.ch-p{font-size:14px;color:rgba(210,230,255,.78);line-height:1.75;margin:0 0 24px;}
+.ch-p b{color:rgba(235,248,255,.95);font-weight:600;}
+.ch-p small{color:rgba(170,205,255,.45);}
+.ch-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+.ch-btn-w{all:unset;display:inline-block;background:#ffffff!important;color:#060e1c!important;border-radius:100px;padding:13px 30px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 20px rgba(0,0,0,.5);transition:background .15s;}
+.ch-btn-w:hover{background:#ddeeff!important;}
+.ch-btn-y{all:unset;display:inline-block;background:#f0b90b!important;color:#0a0500!important;border-radius:100px;padding:13px 30px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;box-shadow:0 0 28px rgba(240,185,11,.55);transition:background .15s;}
+.ch-btn-y:hover{background:#ffd740!important;}
+/* Tool pills in chart section */
+.ch-pills{position:relative;z-index:20;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 20px;max-width:680px;margin:0 auto;}
+.ch-pill{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 16px;text-decoration:none;transition:all .2s;}
+.ch-pill:hover{background:rgba(255,255,255,.14);border-color:rgba(0,180,255,.4);transform:translateY(-2px);}
+.ch-pill-ico{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:16px;flex-shrink:0;}
+.p-ftmo{background:linear-gradient(135deg,#ff6f00,#f9a825);}
+.p-pip{background:linear-gradient(135deg,#1565c0,#0288d1);}
+.p-gold{background:linear-gradient(135deg,#f57f17,#fdd835);}
+.p-lot{background:linear-gradient(135deg,#2e7d32,#43a047);}
+.p-rr{background:linear-gradient(135deg,#6a1b9a,#ab47bc);}
+.ch-pill-name{font-size:12px;font-weight:700;color:rgba(230,244,255,.92);}
+.ch-pill-sub{font-size:10px;color:rgba(150,190,230,.5);margin-top:2px;}
+/* Chart footer */
+.ch-foot{position:relative;z-index:20;width:100%;margin-top:28px;padding:14px 32px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.ch-fc{font-size:11px;color:rgba(200,220,255,.22);}
+.ch-fl{display:flex;gap:16px;}
+.ch-fl a{font-size:11px;color:rgba(200,220,255,.22);text-decoration:none;transition:color .15s;}
+.ch-fl a:hover{color:rgba(200,220,255,.6);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">Forex<em>Tools</em>Hub</a>
+    <div class="nav-tabs">
+      <a href="index.html" class="nav-tab active">Home</a>
+      <a href="ftmo-calculator.html" class="nav-tab">FTMO</a>
+      <a href="pip-calculator.html" class="nav-tab">Pip Value</a>
+      <a href="xauusd-position-size.html" class="nav-tab">Gold</a>
+      <a href="lot-size-calculator.html" class="nav-tab">Lot Size</a>
+      <a href="risk-reward.html" class="nav-tab">Risk/Reward</a>
+    </div>
+    <div class="nav-right">
+      <a href="ftmo-calculator.html" class="nav-pill">
+        <div class="nav-pill-dot"></div>5 Tools Live
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <div>
+      <h1 class="hero-heading"><span class="muted">Professional</span><br/>Forex Calculators.</h1>
+    </div>
+    <div class="hero-pills">
+      <div class="h-pill pill-y">Free Forever</div>
+      <div class="h-pill pill-d">FTMO Verified 2026</div>
+      <div class="h-pill pill-o">THB Supported ฿</div>
+    </div>
+  </div>
+</div>
+
+<!-- BENTO GRID -->
+<div class="bento-wrap">
+<div class="bento">
+
+  <!-- FTMO featured — dark, span 8 -->
+  <a href="ftmo-calculator.html" class="c c-dark s8 tool-card" onclick="track('ftmo')">
+    <div class="tc-icon ic-dark-ftmo">📊</div>
+    <div class="c-label c-label-dark">PROP FIRM · FTMO</div>
+    <div class="tc-name" style="color:var(--cream3);font-size:20px;">FTMO Challenge Calculator</div>
+    <div class="tc-desc tc-desc-dk">Track challenge progress, calculate safe lot sizes within daily limits, monitor real-time P&L vs 5% daily cap, and compute profit splits in USD and THB. 5 tools in one page.</div>
+    <div class="tc-foot tc-foot-dk">
+      <div style="display:flex;gap:10px;">
+        <span class="tc-tag tag-dk">$10k–$200k</span>
+        <span class="tc-tag tag-dk">80–90% split</span>
+        <span class="tc-tag tag-dk">5 tools</span>
+      </div>
+      <div class="tc-arrow tc-arrow-dk">→</div>
+    </div>
+  </a>
+
+  <!-- Quick pip stat — white, span 4 -->
+  <div class="c c-white s4">
+    <div class="c-label">EUR/USD · 1 STANDARD LOT</div>
+    <div class="c-num">$10<span style="font-size:18px;color:var(--muted)">.00</span></div>
+    <div class="c-desc">per pip · USD account</div>
+    <div class="c-badge badge-g">✓ Industry verified</div>
+    <div style="margin-top:18px;">
+      <div class="pair-row"><span class="pr-sym">XAU/USD</span><span class="pr-val prv-y">$1.00/pip</span></div>
+      <div class="pair-row"><span class="pr-sym">GBP/USD</span><span class="pr-val prv-b">$10.00/pip</span></div>
+      <div class="pair-row"><span class="pr-sym">USD/JPY</span><span class="pr-val prv-g">~$6.70/pip</span></div>
+    </div>
+  </div>
+
+  <!-- Gold — yellow card, span 4 -->
+  <a href="xauusd-position-size.html" class="c c-yellow s4 tool-card" onclick="track('xau')" style="text-decoration:none;color:var(--ink);">
+    <div class="tc-icon ic-gold">🥇</div>
+    <div class="tc-name">Gold Position<br/>Size Calculator</div>
+    <div class="tc-desc" style="color:rgba(28,24,20,.6);">ATR-based, pip SL, and dollar SL methods. Built for XAU/USD traders and EA developers. 100 oz/lot, $1/pip verified.</div>
+    <div class="tc-foot" style="border-top-color:rgba(28,24,20,.15);">
+      <span class="tc-tag" style="background:rgba(28,24,20,.1);color:var(--ink2);">3 SL methods</span>
+      <div class="tc-arrow" style="background:var(--ink);color:var(--yellow);">→</div>
+    </div>
+  </a>
+
+  <!-- Pip Calculator — blue-lt, span 4 -->
+  <a href="pip-calculator.html" class="c c-blue-lt s4 tool-card" onclick="track('pip')">
+    <div class="tc-icon ic-pip">📐</div>
+    <div class="tc-name" style="color:var(--blue);">Pip Value Calculator</div>
+    <div class="tc-desc">40+ currency pairs. USD, EUR, GBP, THB and 5 more account currencies. Gold and Silver included.</div>
+    <div class="tc-foot" style="border-top-color:rgba(21,101,192,.15);">
+      <span class="tc-tag tag-b">40+ pairs</span>
+      <div class="tc-arrow" style="background:var(--blue);color:#fff;">→</div>
+    </div>
+  </a>
+
+  <!-- Lot Size stat — white, span 4 -->
+  <div class="c c-white s4">
+    <div class="c-label">SAFE LOT SIZE EXAMPLE</div>
+    <div class="c-num">0.50</div>
+    <div class="c-desc">lots · $10k account · 1% risk · 20pip SL</div>
+    <div style="margin-top:18px;">
+      <div class="prog"><div class="prog-lbl"><span>Risk used</span><span>1.0%</span></div><div class="prog-bar"><div class="prog-fill pf-y" style="width:20%"></div></div></div>
+      <div class="prog"><div class="prog-lbl"><span>Daily limit buffer</span><span>4.0% left</span></div><div class="prog-bar"><div class="prog-fill pf-g" style="width:80%"></div></div></div>
+    </div>
+    <a href="lot-size-calculator.html" class="cta-btn-y" style="display:inline-flex;margin-top:14px;font-size:12px;padding:8px 16px;" onclick="track('lot')">Lot Size Calc →</a>
+  </div>
+
+  <!-- FTMO Rules — teal-lt, span 3 -->
+  <div class="c c-teal-lt s3">
+    <div class="c-label" style="color:var(--teal);">FTMO RULES · 2026</div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,105,92,.12);">
+        <div><div style="font-size:12px;font-weight:700;">Daily Loss</div><div style="font-size:11px;color:var(--muted);">initial balance</div></div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--red);">5%</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,105,92,.12);">
+        <div><div style="font-size:12px;font-weight:700;">Max Drawdown</div><div style="font-size:11px;color:var(--muted);">overall limit</div></div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--red);">10%</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+        <div><div style="font-size:12px;font-weight:700;">Profit Target</div><div style="font-size:11px;color:var(--muted);">Phase 1</div></div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--green);">10%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk/Reward — purple-lt, span 3 -->
+  <a href="risk-reward.html" class="c c-purple-lt s3 tool-card" onclick="track('rr')">
+    <div class="tc-icon ic-rr">📈</div>
+    <div class="tc-name" style="color:var(--purple);">Risk/Reward + EV</div>
+    <div class="tc-desc">R:R by price or pips. Expected Value calculator. 20-trade series simulator. Test if your strategy has positive edge.</div>
+    <div class="tc-foot" style="border-top-color:rgba(106,27,154,.12);">
+      <span class="tc-tag tag-p">EV + simulator</span>
+      <div class="tc-arrow" style="background:var(--purple);color:#fff;">→</div>
+    </div>
+  </a>
+
+  <!-- Lot Size — green-lt, span 3 -->
+  <a href="lot-size-calculator.html" class="c c-green-lt s3 tool-card" onclick="track('lot2')">
+    <div class="tc-icon ic-lot">⚖️</div>
+    <div class="tc-name" style="color:var(--green);">Lot Size Calculator</div>
+    <div class="tc-desc">4 methods: risk %, fixed $, FTMO-safe auto-limit, and cross-pair comparison. All pairs including gold.</div>
+    <div class="tc-foot" style="border-top-color:rgba(46,125,50,.15);">
+      <span class="tc-tag tag-g">FTMO safe mode</span>
+      <div class="tc-arrow" style="background:var(--green);color:#fff;">→</div>
+    </div>
+  </a>
+
+  <!-- Why / Features — dark, span 3 -->
+  <div class="c c-dark s3">
+    <div class="c-label c-label-dark">WHY USE THIS</div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px;">
+      <div class="feat-item">
+        <div class="feat-ico" style="background:rgba(240,185,11,.15);">✓</div>
+        <div><div class="feat-title" style="color:var(--cream3);">Verified formulas</div><div class="feat-sub">All math independently checked</div></div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-ico" style="background:rgba(76,175,80,.15);">⚡</div>
+        <div><div class="feat-title" style="color:var(--cream3);">Instant results</div><div class="feat-sub">No reload, calculate as you type</div></div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-ico" style="background:rgba(100,150,255,.15);">🔒</div>
+        <div><div class="feat-title" style="color:var(--cream3);">No account needed</div><div class="feat-sub">Zero signup, zero data collection</div></div>
+      </div>
+      <div class="feat-item" style="margin:0;">
+        <div class="feat-ico" style="background:rgba(255,255,255,.08);">🇹🇭</div>
+        <div><div class="feat-title" style="color:var(--cream3);">Thai Baht (THB)</div><div class="feat-sub">All results convert to ฿</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /bento -->
+
+<!-- CTA strip -->
+<div style="margin-top:12px;">
+  <div class="cta-strip">
+    <div>
+      <div class="cta-title">Ready to trade with your calculations?</div>
+      <div class="cta-sub">ECN execution and tight spreads mean every pip in your R:R actually counts.</div>
+    </div>
+    <div class="cta-btns">
+      <a href="#" class="cta-btn-y" onclick="trackAff('pepperstone')">Open Pepperstone Account →</a>
+      <a href="ftmo-calculator.html" class="cta-btn-o" onclick="trackAff('ftmo')">Plan FTMO Challenge →</a>
+    </div>
+  </div>
+</div>
+</div><!-- /bento-wrap -->
+
+<!-- CTA CHART SECTION -->
+<div class="chart-section">
+  <canvas id="chartCv"></canvas>
+  <div class="ch-dark-mid"></div>
+  <div class="ch-ft"></div><div class="ch-fb"></div>
+  <div class="ch-fl"></div><div class="ch-fr"></div>
+
+  <div class="ch-body">
+    <div class="ch-badge"><div class="ch-dot"></div>5 TOOLS · FREE · NO SIGNUP</div>
+    <h2 class="ch-h">Calculate before<br/>you trade.</h2>
+    <p class="ch-p">
+      <b>FTMO challenge tracking</b> · <b>pip values</b> · <b>gold position sizing</b> · <b>risk/reward</b><br/>
+      all in one place. <small>Verified math. No account needed.</small>
+    </p>
+    <div class="ch-btns">
+      <button class="ch-btn-w" onclick="location.href='ftmo-calculator.html'">Open FTMO Calculator</button>
+      <button class="ch-btn-y" onclick="location.href='#tools'">All Tools</button>
+    </div>
+  </div>
+
+  <div class="ch-pills">
+    <a href="ftmo-calculator.html" class="ch-pill"><div class="ch-pill-ico p-ftmo">📊</div><div><div class="ch-pill-name">FTMO Calc</div><div class="ch-pill-sub">Challenge tracker</div></div></a>
+    <a href="pip-calculator.html" class="ch-pill"><div class="ch-pill-ico p-pip">📐</div><div><div class="ch-pill-name">Pip Value</div><div class="ch-pill-sub">40+ pairs · THB</div></div></a>
+    <a href="xauusd-position-size.html" class="ch-pill"><div class="ch-pill-ico p-gold">🥇</div><div><div class="ch-pill-name">Gold Position</div><div class="ch-pill-sub">XAU/USD · ATR</div></div></a>
+    <a href="lot-size-calculator.html" class="ch-pill"><div class="ch-pill-ico p-lot">⚖️</div><div><div class="ch-pill-name">Lot Size</div><div class="ch-pill-sub">FTMO safe mode</div></div></a>
+    <a href="risk-reward.html" class="ch-pill"><div class="ch-pill-ico p-rr">📈</div><div><div class="ch-pill-name">Risk/Reward</div><div class="ch-pill-sub">EV + simulator</div></div></a>
+  </div>
+
+  <div class="ch-foot">
+    <span class="ch-fc">© 2026 ForexToolsHub.com — Not financial advice.</span>
+    <div class="ch-fl"><a href="#">Privacy</a><a href="#">Disclaimer</a><a href="#">Contact</a></div>
+  </div>
+</div>
+
+<script>
+/* Candlestick chart animation */
+const cv=document.getElementById('chartCv'),cx=cv.getContext('2d');
+function rsz(){const r=cv.parentElement.getBoundingClientRect();cv.width=r.width*devicePixelRatio;cv.height=r.height*devicePixelRatio;cx.scale(devicePixelRatio,devicePixelRatio);cv.W=r.width;cv.H=r.height;}
+rsz();window.addEventListener('resize',()=>{rsz();init();});
+const CW=9,ST=13;let cd=[],off=0,fr=0,ot=0;
+function mk(p){const d=(Math.random()-.478)*2.8,c=p+d,v=Math.abs(d)*1.8+Math.random()*2.4;return{o:p,h:Math.max(p,c)+Math.random()*v,l:Math.min(p,c)-Math.random()*v,c};}
+function init(){cd=[];const n=Math.ceil((cv.W||700)/ST)+20;let p=1.0842;for(let i=0;i<n;i++){cd.push(mk(p));p=cd[cd.length-1].c;}}
+init();
+function sma(d,n){return d.map((_,i)=>{if(i<n-1)return null;let s=0;for(let k=0;k<n;k++)s+=d[i-k].c;return s/n;});}
+function ow(x,t){return Math.sin(x*.06+t)*12+Math.sin(x*.14+t*1.3)*7+Math.sin(x*.03+t*.7)*18;}
+function drawChart(){
+  const W=cv.W||700,H=cv.H||500;
+  cx.clearRect(0,0,W,H);
+  const bg=cx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#030b1a');bg.addColorStop(.5,'#041228');bg.addColorStop(1,'#030b1a');cx.fillStyle=bg;cx.fillRect(0,0,W,H);
+  const cT=H*.06,cB=H*.70,cH=cB-cT,oT=H*.76,oB=H*.92;
+  cx.save();cx.strokeStyle='rgba(0,150,255,.06)';cx.lineWidth=.5;
+  for(let i=0;i<=5;i++){const y=cT+cH*(i/5);cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke();}
+  for(let i=0;i<10;i++){const x=W*i/10;cx.beginPath();cx.moveTo(x,cT);cx.lineTo(x,cB);cx.stroke();}
+  cx.restore();
+  off+=.35;if(off>=ST){off-=ST;cd.shift();cd.push(mk(cd[cd.length-1].c));}
+  ot+=.012;
+  const n=Math.ceil(W/ST)+4,vs=cd.slice(-n);
+  let mn=Infinity,mx=-Infinity;vs.forEach(c=>{if(c.l<mn)mn=c.l;if(c.h>mx)mx=c.h;});
+  const pd=(mx-mn)*.15;mn-=pd;mx+=pd;const ph=mx-mn,ty=p=>cT+cH*(1-(p-mn)/ph);
+  function dma(ma,col,gl,lw){const pts=[];ma.forEach((v,i)=>{if(v===null)return;pts.push([(i*ST)-off+16,ty(v)]);});if(pts.length<2)return;cx.save();cx.shadowColor=gl;cx.shadowBlur=12;cx.strokeStyle=col;cx.lineWidth=lw;cx.lineJoin='round';cx.beginPath();pts.forEach(([x,y],i)=>i===0?cx.moveTo(x,y):cx.lineTo(x,y));cx.stroke();cx.restore();}
+  dma(sma(vs,Math.min(55,vs.length)),'rgba(100,80,255,.7)','#6050ff',1);
+  dma(sma(vs,Math.min(21,vs.length)),'rgba(0,200,255,.8)','#00c8ff',1.3);
+  dma(sma(vs,Math.min(8,vs.length)),'rgba(0,240,200,.9)','#00f0c8',1.5);
+  vs.forEach((c,i)=>{
+    const x=(i*ST)-off+16;if(x<-CW||x>W+CW)return;
+    const yH=ty(c.h),yL=ty(c.l),yO=ty(c.o),yC=ty(c.c),bl=c.c>=c.o,bT=Math.min(yO,yC),bH=Math.max(Math.abs(yC-yO),1);
+    cx.save();if(i>=vs.length-8){cx.shadowBlur=10;cx.shadowColor=bl?'rgba(200,240,255,.6)':'rgba(150,180,255,.4)';}
+    cx.strokeStyle=bl?'rgba(220,240,255,.8)':'rgba(140,170,220,.6)';cx.lineWidth=1;cx.beginPath();cx.moveTo(x+CW/2,yH);cx.lineTo(x+CW/2,yL);cx.stroke();
+    cx.fillStyle=bl?'rgba(210,235,255,.92)':'rgba(40,80,160,.75)';cx.fillRect(x,bT,CW,bH);
+    if(!bl){cx.strokeStyle='rgba(100,150,220,.6)';cx.lineWidth=.5;cx.strokeRect(x,bT,CW,bH);}
+    cx.restore();
+  });
+  const last=vs[vs.length-1];if(last){const lx=((vs.length-1)*ST)-off+16+CW/2,ly=ty(last.c),g=cx.createRadialGradient(lx,ly,0,lx,ly,80);g.addColorStop(0,'rgba(100,200,255,.15)');g.addColorStop(1,'rgba(0,0,0,0)');cx.fillStyle=g;cx.fillRect(0,0,W,H);}
+  cx.save();cx.font='10px monospace';cx.fillStyle='rgba(140,200,255,.38)';cx.textAlign='right';for(let i=0;i<=4;i++){const p=mn+ph*(i/4);cx.fillText(p.toFixed(4),W-6,cT+cH*(1-i/4)+3);}cx.restore();
+  const om=oT+(oB-oT)/2,oa=(oB-oT)/2*.75;
+  cx.save();cx.font='9px monospace';cx.fillStyle='rgba(0,200,255,.28)';cx.fillText('MACD',8,oT-4);cx.restore();
+  cx.save();cx.strokeStyle='rgba(0,150,255,.05)';cx.lineWidth=.5;cx.beginPath();cx.moveTo(0,om);cx.lineTo(W,om);cx.stroke();cx.restore();
+  [{f:1.0,p:.7,c:'rgba(100,80,255,.5)',g:'#6050ff',w:.8},{f:1.2,p:1.1,c:'rgba(0,200,255,.65)',g:'#00c8ff',w:1.1}].forEach(s=>{cx.save();cx.shadowColor=s.g;cx.shadowBlur=8;cx.strokeStyle=s.c;cx.lineWidth=s.w;cx.lineJoin='round';cx.beginPath();for(let x=0;x<=W;x+=2){const v=ow(x+fr*.4,ot*s.f)+ow(x*.5,ot*s.p)*.4;x===0?cx.moveTo(x,om+(v/38)*oa):cx.lineTo(x,om+(v/38)*oa);}cx.stroke();cx.restore();});
+  fr++;requestAnimationFrame(drawChart);
+}
+drawChart();
+</script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FTMO Calculator — Challenge Tracker, Lot Size & Profit Split | ForexToolsHub</title>
+<meta name="description" content="Free FTMO calculator. Track challenge progress, calculate safe lot sizes, monitor daily loss limits, compute profit splits. All FTMO account sizes $10k–$200k."/>
+<link rel="canonical" href="https://forextoolshub.com/ftmo-calculator.html"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');function trackCalc(n){gtag('event','calculator_used',{'event_category':'engagement','event_label':n});}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#ede8dc;--cream2:#f5f0e8;--cream3:#faf7f2;--paper:#fff;
+  --ink:#1c1814;--ink2:#2e2924;--muted:#9c9488;--border:#e0d8cc;--border2:#d4cbbf;
+  --blue:#1565c0;--blue2:#1976d2;--blue-lt:#e3f2fd;--blue-dim:rgba(21,101,192,.08);
+  --yellow:#f0b90b;--yellow2:#ffd54f;--yellow3:#fff8e1;
+  --green:#2e7d32;--green2:#388e3c;--green-lt:#e8f5e9;
+  --red:#c62828;--red-lt:#ffebee;
+  --orange:#e65100;--orange2:#f57c00;--orange-lt:#fff3e0;
+  --purple:#6a1b9a;--purple-lt:#f3e5f5;
+  --teal:#00695c;--teal-lt:#e0f2f1;
+  --mono:'JetBrains Mono',monospace;--sans:'Plus Jakarta Sans',sans-serif;
+  --r:10px;--r2:14px;--r3:18px;
+  --shadow:0 1px 3px rgba(28,24,20,.05),0 4px 16px rgba(28,24,20,.06);
+  --shadow2:0 2px 8px rgba(28,24,20,.08),0 12px 32px rgba(28,24,20,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--cream);}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ══ NAV ══ */
+.nav{background:rgba(237,232,220,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 24px;}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;height:54px;gap:4px;}
+.nav-brand{font-size:14px;font-weight:800;color:var(--ink);letter-spacing:-.5px;margin-right:16px;flex-shrink:0;text-decoration:none;}
+.nav-brand em{color:var(--yellow);font-style:normal;}
+.nav-tabs{display:flex;gap:2px;background:rgba(28,24,20,.07);padding:4px;border-radius:30px;}
+.nav-tab{font-size:12px;font-weight:600;color:var(--muted);padding:5px 12px;border-radius:24px;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.nav-tab.active{background:var(--orange);color:#fff;}
+.nav-tab:hover:not(.active){background:var(--yellow);color:var(--ink);}
+@media(max-width:768px){.nav-tabs{display:none;}}
+.nav-right{margin-left:auto;}
+.nav-back{font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;padding:6px 14px;border:1.5px solid var(--border2);border-radius:20px;transition:all .2s;}
+.nav-back:hover{border-color:var(--orange);color:var(--orange);}
+
+/* ══ PAGE HEADER ══ */
+.page-header{max-width:1100px;margin:0 auto;padding:32px 24px 20px;}
+.page-badge{display:inline-flex;align-items:center;gap:6px;background:var(--orange-lt);border:1.5px solid rgba(230,81,0,.2);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--orange);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.page-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.page-title{font-size:clamp(22px,4vw,34px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;}
+.page-sub{font-size:14px;color:var(--muted);margin-top:6px;}
+
+/* ══ ACCOUNT BAR ══ */
+.acct-bar{max-width:1100px;margin:0 auto;padding:0 24px 20px;}
+.acct-bar-inner{background:var(--paper);border:1px solid var(--border);border-radius:var(--r3);padding:18px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:var(--shadow);}
+.acct-label{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;}
+select.acct-sel{background:var(--cream3);border:1.5px solid var(--border);border-radius:var(--r);color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;padding:8px 14px;outline:none;cursor:pointer;transition:border-color .2s;-webkit-appearance:none;}
+select.acct-sel:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(230,81,0,.1);}
+.phase-toggle{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;}
+.phase-btn{background:var(--cream2);border:1.5px solid var(--border);border-radius:24px;color:var(--muted);font-family:var(--sans);font-size:12px;font-weight:700;padding:7px 16px;cursor:pointer;transition:all .2s;}
+.phase-btn.on{background:var(--orange);border-color:var(--orange);color:#fff;}
+
+/* ══ RULES BAR ══ */
+.rules-bar{max-width:1100px;margin:0 auto;padding:0 24px 20px;}
+.rules-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+@media(max-width:800px){.rules-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:500px){.rules-grid{grid-template-columns:1fr 1fr;}}
+.rule-chip{border-radius:var(--r2);padding:14px 16px;}
+.rc-o{background:var(--orange-lt);border:1.5px solid rgba(230,81,0,.2);}
+.rc-r{background:var(--red-lt);border:1.5px solid rgba(198,40,40,.2);}
+.rc-g{background:var(--green-lt);border:1.5px solid rgba(46,125,50,.2);}
+.rc-y{background:var(--yellow3);border:1.5px solid rgba(240,185,11,.25);}
+.rc-b{background:var(--blue-lt);border:1.5px solid rgba(21,101,192,.2);}
+.rule-chip-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.rl-o{color:var(--orange);}
+.rl-r{color:var(--red);}
+.rl-g{color:var(--green);}
+.rl-y{color:#7a5c00;}
+.rl-b{color:var(--blue);}
+.rule-chip-val{font-family:var(--mono);font-size:16px;font-weight:800;letter-spacing:-.5px;}
+.rv-o{color:var(--orange);}
+.rv-r{color:var(--red);}
+.rv-g{color:var(--green);}
+.rv-y{color:#7a5c00;}
+.rv-b{color:var(--blue);}
+
+/* ══ MAIN ══ */
+.main-wrap{max-width:1100px;margin:0 auto;padding:0 24px 16px;}
+.ad-top-inner{height:88px;background:var(--cream2);border:1px dashed var(--border2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:20px;}
+
+/* ══ TOOL TABS ══ */
+.tool-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.ttab{background:var(--paper);border:1.5px solid var(--border);border-radius:24px;color:var(--muted);font-family:var(--sans);font-size:12px;font-weight:700;padding:8px 16px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.ttab.on{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 4px 12px rgba(230,81,0,.25);}
+.ttab:hover:not(.on){border-color:var(--orange);color:var(--orange);}
+
+/* ══ TOOL PANEL ══ */
+.tool-panel{display:none;}
+.tool-panel.on{display:block;animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══ CARD ══ */
+.card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r3);padding:26px;box-shadow:var(--shadow);margin-bottom:16px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r3) var(--r3) 0 0;}
+.card-orange::before{background:linear-gradient(90deg,var(--orange),var(--yellow));}
+.card-blue::before{background:linear-gradient(90deg,var(--blue),#42a5f5);}
+.card-green::before{background:linear-gradient(90deg,var(--green),#66bb6a);}
+.card-red::before{background:linear-gradient(90deg,var(--red),#ef5350);}
+.card-purple::before{background:linear-gradient(90deg,var(--purple),#ab47bc);}
+
+.card-title{font-size:15px;font-weight:700;letter-spacing:-.3px;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.card-icon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:16px;flex-shrink:0;}
+.ci-o{background:var(--orange-lt);border:1px solid rgba(230,81,0,.2);}
+.ci-b{background:var(--blue-lt);border:1px solid rgba(21,101,192,.15);}
+.ci-g{background:var(--green-lt);border:1px solid rgba(46,125,50,.2);}
+.ci-r{background:var(--red-lt);border:1px solid rgba(198,40,40,.2);}
+.ci-p{background:var(--purple-lt);border:1px solid rgba(106,27,154,.2);}
+
+/* ══ FORM ══ */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+@media(max-width:560px){.form-grid,.form-grid-3{grid-template-columns:1fr;}}
+.field{display:flex;flex-direction:column;gap:6px;}
+.lbl{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;}
+.lbl-warn{color:var(--orange);}
+select.sinput,input[type=number]{background:var(--cream3);border:1.5px solid var(--border);border-radius:var(--r);color:var(--ink);font-family:var(--mono);font-size:14px;padding:11px 14px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;}
+select.sinput:focus,input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(230,81,0,.1);background:var(--paper);}
+.input-wrap{position:relative;}
+.input-wrap input{padding-right:44px;}
+.suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:600;}
+
+/* ══ CALC BUTTON ══ */
+.calc-btn{margin-top:18px;width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;border:none;border-radius:30px;font-family:var(--sans);font-size:15px;font-weight:700;padding:14px;cursor:pointer;transition:all .2s;letter-spacing:.2px;box-shadow:0 4px 16px rgba(230,81,0,.3);}
+.calc-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(230,81,0,.4);}
+
+/* ══ RESULTS ══ */
+.results{display:none;margin-top:22px;}
+.results.show{display:block;animation:fadeUp .3s ease;}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px;}
+.res-card{border-radius:var(--r2);padding:16px 18px;}
+.rrc-o{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;}
+.rrc-g{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;}
+.rrc-r{background:linear-gradient(135deg,var(--red),#d32f2f);color:#fff;}
+.rrc-b{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;}
+.rrc-y{background:linear-gradient(135deg,#f57f17,var(--yellow));color:#1a0e00;}
+.rrc-p{background:linear-gradient(135deg,var(--purple),#8e24aa);color:#fff;}
+.rrc-soft{background:var(--cream2);border:1.5px solid var(--border);color:var(--ink);}
+.res-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:.75;margin-bottom:7px;}
+.res-val{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-.5px;line-height:1.1;}
+.res-unit{font-size:12px;opacity:.7;margin-left:2px;}
+
+/* Progress bars */
+.prog-wrap{margin-top:14px;}
+.prog-row{margin-bottom:12px;}
+.prog-lbl-row{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:5px;}
+.prog-lbl-row span:last-child{font-family:var(--mono);font-weight:700;}
+.prog-bar{height:8px;background:var(--cream2);border-radius:4px;overflow:hidden;border:1px solid var(--border);}
+.prog-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.pf-o{background:linear-gradient(90deg,var(--orange),var(--yellow));}
+.pf-g{background:var(--green2);}
+.pf-r{background:var(--red);}
+.pf-b{background:var(--blue);}
+
+/* Insight box */
+.insight{background:linear-gradient(135deg,var(--orange-lt),var(--cream3));border:1.5px solid rgba(230,81,0,.18);border-radius:var(--r2);padding:14px 16px;font-family:var(--mono);font-size:12px;color:var(--ink2);line-height:1.85;margin-top:14px;}
+.insight strong{color:var(--orange);font-weight:700;}
+.i-ok{color:var(--green);font-weight:700;}
+.i-warn{color:var(--orange);font-weight:700;}
+.i-danger{color:var(--red);font-weight:700;}
+
+/* Alert boxes */
+.alert-warn{background:var(--yellow3);border:1.5px solid rgba(240,185,11,.3);border-radius:var(--r);padding:10px 14px;font-family:var(--mono);font-size:11px;color:#7a5c00;line-height:1.7;margin-bottom:14px;}
+.alert-danger{background:var(--red-lt);border:1.5px solid rgba(198,40,40,.25);border-radius:var(--r);padding:12px 14px;font-family:var(--mono);font-size:11px;color:var(--red);line-height:1.7;margin-top:10px;font-weight:600;}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:14px;}
+th,td{padding:9px 12px;font-family:var(--mono);font-size:12px;border-bottom:1px solid var(--border);text-align:right;}
+th{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:left;background:var(--cream2);}
+td:first-child{text-align:left;}
+tr:hover td{background:var(--cream3);}
+.row-hi td{background:var(--orange-lt)!important;font-weight:700;color:var(--orange);}
+.t-green{color:var(--green);font-weight:700;}
+.t-red{color:var(--red);font-weight:700;}
+.t-blue{color:var(--blue);font-weight:700;}
+
+/* Sidebar */
+.layout{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}}
+.sidebar-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r3);padding:18px;box-shadow:var(--shadow);margin-bottom:14px;}
+.sc-title{font-size:12px;font-weight:700;margin-bottom:12px;}
+.fact-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);}
+.fact-row:last-child{border:none;}
+.fact-l{font-size:12px;color:var(--muted);}
+.fact-v{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;}
+.fv-o{background:var(--orange-lt);color:var(--orange);}
+.fv-g{background:var(--green-lt);color:var(--green);}
+.fv-r{background:var(--red-lt);color:var(--red);}
+.fv-b{background:var(--blue-lt);color:var(--blue);}
+.broker-card{background:linear-gradient(135deg,var(--ink),var(--ink2));border-radius:var(--r3);padding:20px;margin-bottom:14px;}
+.broker-title{font-size:14px;font-weight:700;color:var(--cream3);margin-bottom:6px;}
+.broker-sub{font-size:12px;color:rgba(237,232,220,.45);line-height:1.6;margin-bottom:14px;}
+.broker-btn{display:block;background:var(--yellow);color:var(--ink);text-align:center;padding:10px;border-radius:24px;font-size:12px;font-weight:700;text-decoration:none;}
+.broker-btn:hover{background:var(--yellow2);}
+.ad-sidebar{height:280px;background:var(--cream2);border:1px dashed var(--border2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:14px;}
+
+/* FAQ */
+.faq-wrap{max-width:1100px;margin:0 auto;padding:8px 24px 60px;}
+.faq-title{font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:14px;}
+.faq-list{display:flex;flex-direction:column;gap:2px;}
+.faq-item{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);}
+.faq-q{padding:14px 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .15s;}
+.faq-q:hover{color:var(--orange);}
+.faq-icon{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);display:grid;place-items:center;font-size:14px;color:var(--orange);flex-shrink:0;background:var(--cream3);transition:all .2s;}
+.faq-q.open .faq-icon{background:var(--orange);border-color:var(--orange);color:#fff;transform:rotate(45deg);}
+.faq-a{display:none;padding:0 18px 14px;font-size:13px;color:var(--muted);line-height:1.75;border-top:1px solid var(--border);}
+.faq-a.open{display:block;}
+
+/* Footer */
+footer{background:var(--ink);padding:36px 24px;}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+.f-brand{font-size:14px;font-weight:800;color:var(--cream3);}
+.f-brand em{color:var(--yellow);font-style:normal;}
+.f-sub{font-size:12px;color:rgba(237,232,220,.3);margin-top:4px;}
+.f-links{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+.f-links a{font-size:12px;color:rgba(237,232,220,.3);text-decoration:none;transition:color .15s;}
+.f-links a:hover{color:var(--yellow);}
+.disclaimer{font-size:10px;color:rgba(237,232,220,.18);margin-top:20px;max-width:1100px;margin-left:auto;margin-right:auto;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">Forex<em>Tools</em>Hub</a>
+    <div class="nav-tabs">
+      <a href="index.html" class="nav-tab">Home</a>
+      <a href="ftmo-calculator.html" class="nav-tab active">FTMO</a>
+      <a href="pip-calculator.html" class="nav-tab">Pip Value</a>
+      <a href="xauusd-position-size.html" class="nav-tab">Gold</a>
+      <a href="lot-size-calculator.html" class="nav-tab">Lot Size</a>
+      <a href="risk-reward.html" class="nav-tab">Risk/Reward</a>
+    </div>
+    <div class="nav-right"><a href="index.html" class="nav-back">← All Tools</a></div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-badge"><div class="page-badge-dot"></div>FTMO Verified Rules 2026</div>
+  <h1 class="page-title">FTMO Challenge Calculator</h1>
+  <p class="page-sub">5 tools in one — progress tracker, lot size, daily loss monitor, profit split, fee ROI</p>
+</div>
+
+<!-- ACCOUNT BAR -->
+<div class="acct-bar">
+  <div class="acct-bar-inner">
+    <span class="acct-label">Account Size</span>
+    <select class="acct-sel" id="acct-size" onchange="updateRules()">
+      <option value="10000">$10,000 — Fee $155</option>
+      <option value="25000">$25,000 — Fee $250</option>
+      <option value="50000">$50,000 — Fee $345</option>
+      <option value="100000" selected>$100,000 — Fee $540</option>
+      <option value="200000">$200,000 — Fee $1,080</option>
+    </select>
+    <div class="phase-toggle">
+      <button class="phase-btn on" id="ph1" onclick="setPhase(1)">Phase 1</button>
+      <button class="phase-btn" id="ph2" onclick="setPhase(2)">Phase 2</button>
+      <button class="phase-btn" id="ph3" onclick="setPhase(3)">Funded</button>
+    </div>
+  </div>
+</div>
+
+<!-- RULES BAR -->
+<div class="rules-bar">
+  <div class="rules-grid">
+    <div class="rule-chip rc-o">
+      <div class="rule-chip-label rl-o">Profit Target</div>
+      <div class="rule-chip-val rv-o" id="r-target">$10,000</div>
+    </div>
+    <div class="rule-chip rc-r">
+      <div class="rule-chip-label rl-r">Daily Loss Limit</div>
+      <div class="rule-chip-val rv-r" id="r-daily">$5,000</div>
+    </div>
+    <div class="rule-chip rc-r">
+      <div class="rule-chip-label rl-r">Max Drawdown</div>
+      <div class="rule-chip-val rv-r" id="r-overall">$10,000</div>
+    </div>
+    <div class="rule-chip rc-y">
+      <div class="rule-chip-label rl-y">Min Trading Days</div>
+      <div class="rule-chip-val rv-y" id="r-days">4 days</div>
+    </div>
+    <div class="rule-chip rc-g">
+      <div class="rule-chip-label rl-g">Profit Split</div>
+      <div class="rule-chip-val rv-g" id="r-split">80%</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <div class="ad-top-inner">AD SLOT · 728×90 — Google AdSense</div>
+
+  <div class="layout">
+    <!-- LEFT -->
+    <div>
+      <!-- TOOL TABS -->
+      <div class="tool-tabs">
+        <button class="ttab on" onclick="switchTab('progress')">📊 Progress</button>
+        <button class="ttab" onclick="switchTab('lotsize')">📐 Lot Size</button>
+        <button class="ttab" onclick="switchTab('daily')">🛡️ Daily Loss</button>
+        <button class="ttab" onclick="switchTab('split')">💰 Profit Split</button>
+        <button class="ttab" onclick="switchTab('roi')">📈 Fee ROI</button>
+      </div>
+
+      <!-- ═══ TOOL 1: PROGRESS ═══ -->
+      <div class="tool-panel on" id="panel-progress">
+        <div class="card card-orange">
+          <div class="card-title"><div class="card-icon ci-o">📊</div>Challenge Progress Tracker</div>
+          <div class="form-grid">
+            <div class="field"><label class="lbl">Starting Balance ($)</label><div class="input-wrap"><input type="number" id="cp-start" value="100000" step="1000"/><span class="suffix">$</span></div></div>
+            <div class="field"><label class="lbl">Current Equity ($)</label><div class="input-wrap"><input type="number" id="cp-equity" value="104200" step="100"/><span class="suffix">$</span></div></div>
+            <div class="field"><label class="lbl">Profit Target (%)</label><div class="input-wrap"><input type="number" id="cp-target" value="10" step="1"/><span class="suffix">%</span></div></div>
+            <div class="field"><label class="lbl">Trading Days Done</label><input type="number" id="cp-days" value="7" min="0"/></div>
+          </div>
+          <button class="calc-btn" onclick="calcProgress()">Calculate Progress →</button>
+          <div class="results" id="progress-results">
+            <div class="res-grid">
+              <div class="res-card rrc-o"><div class="res-label">Progress to Target</div><div class="res-val" id="cp-pct">–<span class="res-unit">%</span></div></div>
+              <div class="res-card rrc-g"><div class="res-label">Profit So Far</div><div class="res-val" id="cp-profit">–</div></div>
+              <div class="res-card rrc-y"><div class="res-label">Still Needed</div><div class="res-val" id="cp-needed">–</div></div>
+              <div class="res-card rrc-r"><div class="res-label">Drawdown Buffer</div><div class="res-val" id="cp-dd">–</div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-row">
+                <div class="prog-lbl-row"><span>Profit progress</span><span id="cp-pct-lbl">0%</span></div>
+                <div class="prog-bar"><div class="prog-fill pf-o" id="pf-profit" style="width:0%"></div></div>
+              </div>
+              <div class="prog-row">
+                <div class="prog-lbl-row"><span>Drawdown used</span><span id="cp-dd-lbl">0%</span></div>
+                <div class="prog-bar"><div class="prog-fill pf-r" id="pf-dd" style="width:0%"></div></div>
+              </div>
+            </div>
+            <div class="insight" id="cp-insight"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TOOL 2: LOT SIZE ═══ -->
+      <div class="tool-panel" id="panel-lotsize">
+        <div class="card card-blue">
+          <div class="card-title"><div class="card-icon ci-b">📐</div>Safe Lot Size Calculator</div>
+          <div class="form-grid">
+            <div class="field"><label class="lbl">Account Balance ($)</label><div class="input-wrap"><input type="number" id="ls-balance" value="100000" step="1000"/><span class="suffix">$</span></div></div>
+            <div class="field"><label class="lbl">Risk Per Trade (%)</label><div class="input-wrap"><input type="number" id="ls-risk" value="0.5" step="0.1" min="0.1" max="5"/><span class="suffix">%</span></div></div>
+            <div class="field"><label class="lbl">Stop Loss (pips)</label><input type="number" id="ls-sl" value="20" min="1"/></div>
+            <div class="field"><label class="lbl">Currency Pair</label>
+              <select class="sinput" id="ls-pair">
+                <option value="10">EUR/USD ($10/pip)</option>
+                <option value="10">GBP/USD ($10/pip)</option>
+                <option value="6.7">USD/JPY (~$6.70/pip)</option>
+                <option value="11.1">USD/CHF (~$11.10/pip)</option>
+                <option value="10">AUD/USD ($10/pip)</option>
+                <option value="1">XAU/USD Gold ($1/pip)</option>
+                <option value="6.7">GBP/JPY (~$6.70/pip)</option>
+                <option value="6.7">EUR/JPY (~$6.70/pip)</option>
+              </select>
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calcLotSize()" style="background:linear-gradient(135deg,var(--blue),var(--blue2));box-shadow:0 4px 16px rgba(21,101,192,.3);">Calculate Safe Lot Size →</button>
+          <div class="results" id="lotsize-results">
+            <div class="res-grid">
+              <div class="res-card rrc-b"><div class="res-label">Safe Lot Size</div><div class="res-val" id="ls-lots">–<span class="res-unit">lots</span></div></div>
+              <div class="res-card rrc-y"><div class="res-label">Risk Amount</div><div class="res-val" id="ls-riskamt">–</div></div>
+              <div class="res-card rrc-r"><div class="res-label">Max Loss (SL hit)</div><div class="res-val" id="ls-loss">–</div></div>
+              <div class="res-card rrc-g"><div class="res-label">Trades/Day (5% limit)</div><div class="res-val" id="ls-trades">–<span class="res-unit">trades</span></div></div>
+            </div>
+            <div class="insight" id="ls-insight"></div>
+            <table>
+              <thead><tr><th>Risk %</th><th>Lots</th><th>Max Loss</th><th>Trades before 5% limit</th></tr></thead>
+              <tbody id="ls-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TOOL 3: DAILY LOSS ═══ -->
+      <div class="tool-panel" id="panel-daily">
+        <div class="card card-red">
+          <div class="card-title"><div class="card-icon ci-r">🛡️</div>Daily Loss Limit Monitor</div>
+          <div class="alert-warn">⚠️ FTMO daily loss = 5% of INITIAL BALANCE — not current equity. This distinction is critical.</div>
+          <div class="form-grid">
+            <div class="field"><label class="lbl lbl-warn">Initial Challenge Balance ($)</label><div class="input-wrap"><input type="number" id="dl-init" value="100000" step="1000"/><span class="suffix">$</span></div></div>
+            <div class="field"><label class="lbl">Current Equity ($)</label><div class="input-wrap"><input type="number" id="dl-equity" value="98500" step="100"/><span class="suffix">$</span></div></div>
+            <div class="field"><label class="lbl">Today's Realized P&L ($)</label><div class="input-wrap"><input type="number" id="dl-pnl" value="-800" step="100"/><span class="suffix">$</span></div></div>
+            <div class="field"><label class="lbl">Floating P&L (Open trades)</label><div class="input-wrap"><input type="number" id="dl-float" value="-200" step="100"/><span class="suffix">$</span></div></div>
+          </div>
+          <button class="calc-btn" onclick="calcDaily()" style="background:linear-gradient(135deg,var(--red),#d32f2f);box-shadow:0 4px 16px rgba(198,40,40,.3);">Check Daily Limit →</button>
+          <div class="results" id="daily-results">
+            <div class="res-grid">
+              <div class="res-card rrc-r"><div class="res-label">Daily Limit</div><div class="res-val" id="dl-limit">–</div></div>
+              <div class="res-card rrc-y"><div class="res-label">Used Today</div><div class="res-val" id="dl-used">–</div></div>
+              <div class="res-card rrc-g"><div class="res-label">Remaining</div><div class="res-val" id="dl-remain">–</div></div>
+              <div class="res-card rrc-soft"><div class="res-label">% of Limit Used</div><div class="res-val" id="dl-pct">–</div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-row">
+                <div class="prog-lbl-row"><span>Daily loss used</span><span id="dl-prog-lbl">–</span></div>
+                <div class="prog-bar"><div class="prog-fill pf-r" id="dl-prog-fill" style="width:0%"></div></div>
+              </div>
+            </div>
+            <div id="dl-alert"></div>
+            <div class="insight" id="dl-insight"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TOOL 4: PROFIT SPLIT ═══ -->
+      <div class="tool-panel" id="panel-split">
+        <div class="card card-green">
+          <div class="card-title"><div class="card-icon ci-g">💰</div>Profit Split Calculator</div>
+          <div class="form-grid">
+            <div class="field"><label class="lbl">Account Size ($)</label><div class="input-wrap"><input type="number" id="ps-size" value="100000" step="1000"/><span class="suffix">$</span></div></div>
+            <div class="field"><label class="lbl">Monthly Profit ($)</label><div class="input-wrap"><input type="number" id="ps-profit" value="5000" step="100"/><span class="suffix">$</span></div></div>
+            <div class="field"><label class="lbl">Profit Split (%)</label>
+              <select class="sinput" id="ps-split">
+                <option value="80" selected>80% — Standard</option>
+                <option value="85">85% — After scaling</option>
+                <option value="90">90% — Max scaling</option>
+              </select>
+            </div>
+            <div class="field"><label class="lbl">THB Exchange Rate</label><div class="input-wrap"><input type="number" id="ps-thb" value="35.8" step="0.1"/><span class="suffix">฿/$</span></div></div>
+          </div>
+          <button class="calc-btn" onclick="calcSplit()" style="background:linear-gradient(135deg,var(--green),var(--green2));box-shadow:0 4px 16px rgba(46,125,50,.3);">Calculate My Payout →</button>
+          <div class="results" id="split-results">
+            <div class="res-grid">
+              <div class="res-card rrc-g"><div class="res-label">Your Payout (USD)</div><div class="res-val" id="ps-usd">–</div></div>
+              <div class="res-card rrc-b"><div class="res-label">Your Payout (THB)</div><div class="res-val" id="ps-thb-out">–</div></div>
+              <div class="res-card rrc-soft"><div class="res-label">FTMO keeps</div><div class="res-val" id="ps-ftmo">–</div></div>
+              <div class="res-card rrc-y"><div class="res-label">Return on Account</div><div class="res-val" id="ps-roa">–<span class="res-unit">%</span></div></div>
+            </div>
+            <div class="insight" id="ps-insight"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TOOL 5: FEE ROI ═══ -->
+      <div class="tool-panel" id="panel-roi">
+        <div class="card card-purple">
+          <div class="card-title"><div class="card-icon ci-p">📈</div>Challenge Fee ROI Calculator</div>
+          <div class="form-grid">
+            <div class="field"><label class="lbl">Account Size</label>
+              <select class="sinput" id="roi-size" onchange="updateFee()">
+                <option value="10000,155">$10,000 — Fee $155</option>
+                <option value="25000,250">$25,000 — Fee $250</option>
+                <option value="50000,345">$50,000 — Fee $345</option>
+                <option value="100000,540" selected>$100,000 — Fee $540</option>
+                <option value="200000,1080">$200,000 — Fee $1,080</option>
+              </select>
+            </div>
+            <div class="field"><label class="lbl">Challenge Fee ($)</label><div class="input-wrap"><input type="number" id="roi-fee" value="540"/><span class="suffix">$</span></div></div>
+            <div class="field"><label class="lbl">Expected Monthly Profit (%)</label><div class="input-wrap"><input type="number" id="roi-monthly" value="5" step="0.5"/><span class="suffix">%</span></div></div>
+            <div class="field"><label class="lbl">Profit Split (%)</label>
+              <select class="sinput" id="roi-split">
+                <option value="80" selected>80%</option>
+                <option value="85">85%</option>
+                <option value="90">90%</option>
+              </select>
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calcROI()" style="background:linear-gradient(135deg,var(--purple),#8e24aa);box-shadow:0 4px 16px rgba(106,27,154,.3);">Calculate Fee ROI →</button>
+          <div class="results" id="roi-results">
+            <div class="res-grid">
+              <div class="res-card rrc-p"><div class="res-label">Break-even Month</div><div class="res-val" id="roi-be">–</div></div>
+              <div class="res-card rrc-g"><div class="res-label">Month 1 Payout</div><div class="res-val" id="roi-m1">–</div></div>
+              <div class="res-card rrc-y"><div class="res-label">Year 1 Total</div><div class="res-val" id="roi-y1">–</div></div>
+              <div class="res-card rrc-b"><div class="res-label">Annual ROI on Fee</div><div class="res-val" id="roi-annual">–<span class="res-unit">%</span></div></div>
+            </div>
+            <table>
+              <thead><tr><th>Month</th><th>Gross Profit</th><th>Your Payout</th><th>Cumulative Net</th></tr></thead>
+              <tbody id="roi-table"></tbody>
+            </table>
+            <div class="insight" id="roi-insight"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div>
+      <div class="ad-sidebar">AD SLOT · 300×250</div>
+      <div class="sidebar-card">
+        <div class="sc-title">📋 FTMO Account Fees</div>
+        <div class="fact-row"><span class="fact-l">$10,000 account</span><span class="fact-v fv-o">$155</span></div>
+        <div class="fact-row"><span class="fact-l">$25,000 account</span><span class="fact-v fv-o">$250</span></div>
+        <div class="fact-row"><span class="fact-l">$50,000 account</span><span class="fact-v fv-o">$345</span></div>
+        <div class="fact-row"><span class="fact-l">$100,000 account</span><span class="fact-v fv-o">$540</span></div>
+        <div class="fact-row"><span class="fact-l">$200,000 account</span><span class="fact-v fv-o">$1,080</span></div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:10px;">✓ Fee refunded on first payout</div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sc-title">🔑 Key Rules Summary</div>
+        <div class="fact-row"><span class="fact-l">Phase 1 target</span><span class="fact-v fv-o">10%</span></div>
+        <div class="fact-row"><span class="fact-l">Phase 2 target</span><span class="fact-v fv-o">5%</span></div>
+        <div class="fact-row"><span class="fact-l">Daily loss</span><span class="fact-v fv-r">5% initial bal.</span></div>
+        <div class="fact-row"><span class="fact-l">Max drawdown</span><span class="fact-v fv-r">10% initial bal.</span></div>
+        <div class="fact-row"><span class="fact-l">Min trading days</span><span class="fact-v fv-b">4 days/phase</span></div>
+        <div class="fact-row"><span class="fact-l">Time limit</span><span class="fact-v fv-g">None</span></div>
+        <div class="fact-row"><span class="fact-l">Standard split</span><span class="fact-v fv-g">80%</span></div>
+      </div>
+      <div class="broker-card">
+        <div class="broker-title">Start your FTMO challenge</div>
+        <div class="broker-sub">Use this calculator to plan your risk before you start. Then trade with tight spreads.</div>
+        <a href="#" class="broker-btn">Open Pepperstone Account →</a>
+      </div>
+      <div class="sidebar-card">
+        <div class="sc-title">💡 Safe Risk Per Trade</div>
+        <div style="font-family:var(--mono);font-size:11px;line-height:1.9;color:var(--muted);">
+          <span style="color:var(--green);font-weight:700;">0.5%</span> = Conservative ✅<br/>
+          <span style="color:var(--orange);font-weight:700;">1.0%</span> = Standard ⚠️<br/>
+          <span style="color:var(--red);font-weight:700;">2.0%</span> = Aggressive 🚨<br/><br/>
+          At 1%: 5 losing trades = 5% daily limit<br/>
+          At 0.5%: 10 trades before limit
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-wrap">
+  <div class="faq-title">Frequently Asked Questions</div>
+  <div class="faq-list">
+    <div class="faq-item"><div class="faq-q">How is FTMO daily loss calculated?<div class="faq-icon">+</div></div><div class="faq-a">FTMO's 5% daily loss limit is calculated from your INITIAL account balance — not current equity. For $100,000, that's $5,000/day regardless of profit. This includes both realized P&L and floating losses on open positions.</div></div>
+    <div class="faq-item"><div class="faq-q">What lot size is safe for FTMO?<div class="faq-icon">+</div></div><div class="faq-a">At 0.5% risk per trade on $100,000 ($500 risk), with a 20-pip SL on EUR/USD: Lots = $500 ÷ (20 × $10) = 2.5 lots. This allows 10 consecutive losing trades before hitting the 5% daily limit — a comfortable buffer for most strategies.</div></div>
+    <div class="faq-item"><div class="faq-q">When does FTMO refund the challenge fee?<div class="faq-icon">+</div></div><div class="faq-a">FTMO refunds the challenge fee with your first profit split payout as a funded trader. For example, if you paid $540 for a $100k challenge, it's added to your first withdrawal.</div></div>
+    <div class="faq-item"><div class="faq-q">What is the FTMO scaling plan?<div class="faq-icon">+</div></div><div class="faq-a">Every 4 months, if you achieve at least 10% profit across two consecutive payout periods, FTMO increases your account by 25%. Starting from $100,000, you can scale to $125,000, $156,250, and so on up to $2,000,000. The profit split also increases up to 90%.</div></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div><div class="f-brand">Forex<em>Tools</em>Hub</div><div class="f-sub">Free professional forex calculators. Verified math.</div></div>
+    <div class="f-links">
+      <a href="index.html">Home</a>
+      <a href="pip-calculator.html">Pip Value</a>
+      <a href="lot-size-calculator.html">Lot Size</a>
+      <a href="xauusd-position-size.html">Gold</a>
+      <a href="risk-reward.html">Risk/Reward</a>
+      <a href="#">Privacy</a>
+    </div>
+  </div>
+  <p class="disclaimer">© 2026 ForexToolsHub.com — FTMO rules verified as of 2026. Rules may change — confirm at ftmo.com. Not financial advice.</p>
+</footer>
+
+<script>
+const ACCT={10000:{fee:155},25000:{fee:250},50000:{fee:345},100000:{fee:540},200000:{fee:1080}};
+let phase=1;
+function getSize(){return parseInt(document.getElementById('acct-size').value);}
+function fmt(n){const a=Math.abs(n);if(a>=1000000)return '$'+(n/1000000).toFixed(2)+'M';if(a>=1000)return '$'+n.toLocaleString('en',{maximumFractionDigits:0});return '$'+n.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtN(n,d=2){return n.toFixed(d);}
+
+function setPhase(p){
+  phase=p;
+  ['ph1','ph2','ph3'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',i===p-1));
+  updateRules();
+}
+function updateRules(){
+  const size=getSize();
+  const tPct=phase===1?10:phase===2?5:0;
+  const target=size*(tPct/100);
+  document.getElementById('r-target').textContent=phase===3?'No target':fmt(target)+' ('+tPct+'%)';
+  document.getElementById('r-daily').textContent=fmt(size*.05)+' (5%)';
+  document.getElementById('r-overall').textContent=fmt(size*.10)+' (10%)';
+  document.getElementById('r-days').textContent=phase===3?'—':'4 days min';
+  document.getElementById('r-split').textContent=phase===3?'80–90%':'N/A';
+  const inputs=['cp-start','dl-init','ls-balance','ps-size'];
+  inputs.forEach(id=>{const el=document.getElementById(id);if(el)el.value=size;});
+  document.getElementById('cp-target').value=tPct||10;
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ttab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('panel-'+name).classList.add('on');
+  event.currentTarget.classList.add('on');
+}
+
+/* Tool 1: Progress */
+function calcProgress(){
+  const start=parseFloat(document.getElementById('cp-start').value)||0;
+  const equity=parseFloat(document.getElementById('cp-equity').value)||0;
+  const tPct=parseFloat(document.getElementById('cp-target').value)||10;
+  const days=parseInt(document.getElementById('cp-days').value)||0;
+  const targetAmt=start*(tPct/100);
+  const overall=start*.10;
+  const profit=equity-start;
+  const pctDone=Math.max(0,(profit/targetAmt)*100);
+  const needed=Math.max(0,targetAmt-profit);
+  const ddUsed=Math.max(0,start-equity);
+  const ddRemain=overall-ddUsed;
+  const ddPct=(ddUsed/overall)*100;
+  document.getElementById('cp-pct').innerHTML=fmtN(pctDone,1)+'<span class="res-unit">%</span>';
+  document.getElementById('cp-profit').textContent=(profit>=0?'+':'')+fmt(profit);
+  document.getElementById('cp-needed').textContent=fmt(needed);
+  document.getElementById('cp-dd').textContent=fmt(ddRemain)+' left';
+  document.getElementById('pf-profit').style.width=Math.min(pctDone,100)+'%';
+  document.getElementById('cp-pct-lbl').textContent=fmtN(pctDone,1)+'%';
+  document.getElementById('pf-dd').style.width=Math.min(ddPct,100)+'%';
+  document.getElementById('cp-dd-lbl').textContent=fmtN(ddPct,1)+'%';
+  let status='',cls='';
+  if(profit>=targetAmt&&days>=4){status='🎉 Target achieved! Ready to submit.';cls='i-ok';}
+  else if(profit>=targetAmt&&days<4){status='⚠️ Profit hit but need '+(4-days)+' more trading day(s).';cls='i-warn';}
+  else if(ddPct>=80){status='🚨 Drawdown critical — trade very carefully.';cls='i-danger';}
+  else{status='📊 Challenge in progress. Stay within daily limits.';cls='';}
+  document.getElementById('cp-insight').innerHTML=`<strong>Status:</strong> <span class="${cls}">${status}</span><br>Profit: <strong>${fmt(profit)}</strong> of <strong>${fmt(targetAmt)}</strong> target<br>Buffer remaining: <strong>${fmt(ddRemain)}</strong> (${fmtN(100-ddPct,1)}% left)<br>Min trading days: ${days>=4?'<span class="i-ok">✅ Met ('+days+' days)</span>':'<span class="i-warn">⚠️ Need '+(4-days)+' more</span>'}`;
+  document.getElementById('progress-results').classList.add('show');
+  trackCalc('ftmo_progress');
+}
+
+/* Tool 2: Lot Size */
+function calcLotSize(){
+  const balance=parseFloat(document.getElementById('ls-balance').value)||0;
+  const riskPct=parseFloat(document.getElementById('ls-risk').value)||.5;
+  const sl=parseFloat(document.getElementById('ls-sl').value)||20;
+  const pipVal=parseFloat(document.getElementById('ls-pair').value)||10;
+  const riskAmt=balance*(riskPct/100);
+  const lots=riskAmt/(sl*pipVal);
+  const actual=lots*sl*pipVal;
+  const dailyLimit=balance*.05;
+  const trades=Math.floor(dailyLimit/riskAmt);
+  document.getElementById('ls-lots').innerHTML=fmtN(lots,2)+'<span class="res-unit">lots</span>';
+  document.getElementById('ls-riskamt').textContent=fmt(riskAmt);
+  document.getElementById('ls-loss').textContent='-'+fmt(actual);
+  document.getElementById('ls-trades').innerHTML=trades+'<span class="res-unit">trades</span>';
+  document.getElementById('ls-insight').innerHTML=`<strong>Formula:</strong> ${fmt(riskAmt)} ÷ (${sl} pips × $${pipVal}/pip) = <strong>${fmtN(lots,2)} lots</strong><br>${riskPct<=1?'<span class="i-ok">✅ Conservative — recommended for FTMO.</span>':'<span class="i-warn">⚠️ Consider reducing risk for FTMO safety.</span>'}`;
+  const tbody=document.getElementById('ls-table');tbody.innerHTML='';
+  [.25,.5,1,1.5,2].forEach(r=>{
+    const ra=balance*(r/100),l=ra/(sl*pipVal),dt=Math.floor(dailyLimit/ra);
+    const hi=r===riskPct?'class="row-hi"':'';
+    tbody.innerHTML+=`<tr ${hi}><td>${r}%${r===riskPct?' ←':''}</td><td>${fmtN(l,2)} lots</td><td>-${fmt(ra)}</td><td>${dt} trades</td></tr>`;
+  });
+  document.getElementById('lotsize-results').classList.add('show');
+  trackCalc('ftmo_lotsize');
+}
+
+/* Tool 3: Daily */
+function calcDaily(){
+  const init=parseFloat(document.getElementById('dl-init').value)||0;
+  const pnl=parseFloat(document.getElementById('dl-pnl').value)||0;
+  const float=parseFloat(document.getElementById('dl-float').value)||0;
+  const dailyLimit=init*.05;
+  const exposure=Math.max(0,-pnl)+Math.max(0,-float);
+  const remain=Math.max(0,dailyLimit-exposure);
+  const pct=(exposure/dailyLimit)*100;
+  document.getElementById('dl-limit').textContent=fmt(dailyLimit);
+  document.getElementById('dl-used').textContent=fmt(exposure);
+  document.getElementById('dl-remain').textContent=fmt(remain);
+  document.getElementById('dl-pct').textContent=fmtN(pct,1)+'%';
+  document.getElementById('dl-prog-fill').style.width=Math.min(pct,100)+'%';
+  document.getElementById('dl-prog-lbl').textContent=fmtN(pct,1)+'% used';
+  const alertEl=document.getElementById('dl-alert');
+  if(pct>=100)alertEl.innerHTML='<div class="alert-danger">🚨 DAILY LIMIT REACHED — Close all positions. Do NOT open new trades today.</div>';
+  else if(pct>=80)alertEl.innerHTML='<div class="alert-warn">⚠️ '+fmtN(100-pct,1)+'% of limit remaining ('+fmt(remain)+'). Consider closing positions.</div>';
+  else alertEl.innerHTML='';
+  document.getElementById('dl-insight').innerHTML=`<strong>Daily Limit:</strong> 5% × ${fmt(init)} = <strong>${fmt(dailyLimit)}</strong><br>Realized: <strong>${fmt(Math.max(0,-pnl))}</strong> | Floating: <strong>${fmt(Math.max(0,-float))}</strong><br>Total exposure: <strong>${fmt(exposure)}</strong> | Remaining: <strong class="${pct>80?'i-danger':'i-ok'}">${fmt(remain)}</strong>`;
+  document.getElementById('daily-results').classList.add('show');
+  trackCalc('ftmo_daily');
+}
+
+/* Tool 4: Split */
+function calcSplit(){
+  const size=parseFloat(document.getElementById('ps-size').value)||0;
+  const profit=parseFloat(document.getElementById('ps-profit').value)||0;
+  const split=parseFloat(document.getElementById('ps-split').value)||80;
+  const thb=parseFloat(document.getElementById('ps-thb').value)||35.8;
+  const my=profit*(split/100);
+  const ftmo=profit-my;
+  const roa=(my/size)*100;
+  document.getElementById('ps-usd').textContent=fmt(my);
+  document.getElementById('ps-thb-out').textContent='฿'+Math.round(my*thb).toLocaleString();
+  document.getElementById('ps-ftmo').textContent=fmt(ftmo);
+  document.getElementById('ps-roa').innerHTML=fmtN(roa,2)+'<span class="res-unit">%</span>';
+  document.getElementById('ps-insight').innerHTML=`Your payout: <strong>${fmt(my)}</strong> = ฿<strong>${Math.round(my*thb).toLocaleString()}</strong><br>Annual (same rate): <strong>${fmt(my*12)}</strong> / ฿<strong>${Math.round(my*thb*12).toLocaleString()}</strong><br>${roa>=5?'<span class="i-ok">✅ Strong return on account.</span>':'<span class="i-warn">📊 Build consistency first.</span>'}`;
+  document.getElementById('split-results').classList.add('show');
+  trackCalc('ftmo_split');
+}
+
+/* Tool 5: ROI */
+function updateFee(){const v=document.getElementById('roi-size').value.split(',');document.getElementById('roi-fee').value=v[1];}
+function calcROI(){
+  const vals=document.getElementById('roi-size').value.split(',');
+  const size=parseInt(vals[0]),fee=parseFloat(document.getElementById('roi-fee').value)||0;
+  const monthPct=parseFloat(document.getElementById('roi-monthly').value)||5;
+  const split=parseFloat(document.getElementById('roi-split').value)||80;
+  const monthProfit=size*(monthPct/100);
+  const monthPayout=monthProfit*(split/100);
+  const beMonth=Math.ceil(fee/monthPayout);
+  const y1=monthPayout*12;
+  const roi=(y1/fee)*100;
+  document.getElementById('roi-be').textContent='Month '+beMonth;
+  document.getElementById('roi-m1').textContent=fmt(monthPayout);
+  document.getElementById('roi-y1').textContent=fmt(y1);
+  document.getElementById('roi-annual').innerHTML=fmtN(roi,0)+'<span class="res-unit">%</span>';
+  const tbody=document.getElementById('roi-table');tbody.innerHTML='';
+  let cum=0;
+  for(let m=1;m<=6;m++){
+    cum+=monthPayout;const net=cum-fee;const be=m===beMonth;
+    tbody.innerHTML+=`<tr ${be?'class="row-hi"':''}><td>Month ${m}${be?' ✅':''}</td><td>${fmt(monthProfit)}</td><td>${fmt(monthPayout)}</td><td class="${net>=0?'t-green':'t-red'}">${net>=0?'+':''}${fmt(net)}</td></tr>`;
+  }
+  document.getElementById('roi-insight').innerHTML=`Fee: <strong>${fmt(fee)}</strong> | Monthly payout: <strong>${fmt(monthPayout)}</strong><br>Break-even at <strong>Month ${beMonth}</strong> — pure profit after that<br>${roi>500?'<span class="i-ok">✅ Excellent ROI. Fee refunded on first payout.</span>':'<span class="i-warn">📊 Consider higher account for better ratio.</span>'}`;
+  document.getElementById('roi-results').classList.add('show');
+  trackCalc('ftmo_roi');
+}
+
+/* FAQ */
+document.querySelectorAll('.faq-q').forEach(q=>{q.addEventListener('click',()=>{const o=q.classList.contains('open');document.querySelectorAll('.faq-q').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.faq-a').forEach(x=>x.classList.remove('open'));if(!o){q.classList.add('open');q.nextElementSibling.classList.add('open');}});});
+
+updateRules();
+calcProgress();
+</script>
+</body>
+</html>

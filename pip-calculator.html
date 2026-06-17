@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Forex Pip Calculator — Instant Pip Value for 40+ Pairs | ForexToolsHub</title>
+<meta name="description" content="Free forex pip calculator. Instant pip values for EUR/USD, XAU/USD Gold, GBP/USD and 40+ pairs. Supports USD, EUR, GBP, THB accounts. No signup."/>
+<meta name="keywords" content="forex pip calculator, pip value calculator, xauusd pip calculator, lot size pip value, forex tools free"/>
+<link rel="canonical" href="https://forextoolshub.com/pip-calculator.html"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');function trackCalc(n){gtag('event','calculator_used',{'event_category':'engagement','event_label':n});}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#ede8dc;--cream2:#f5f0e8;--cream3:#faf7f2;--paper:#ffffff;
+  --ink:#1c1814;--ink2:#2e2924;--muted:#9c9488;--muted2:#c4bdb4;
+  --border:#e0d8cc;--border2:#d4cbbf;
+  --blue:#1565c0;--blue2:#1976d2;--blue-lt:#e3f2fd;--blue-dim:rgba(21,101,192,.08);
+  --yellow:#f0b90b;--yellow2:#ffd54f;--yellow3:#fff8e1;
+  --green:#2e7d32;--green-lt:#e8f5e9;
+  --red:#c62828;--red-lt:#ffebee;
+  --orange:#e65100;--orange-lt:#fff3e0;
+  --purple:#6a1b9a;--purple-lt:#f3e5f5;
+  --teal:#00695c;--teal-lt:#e0f2f1;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --r:10px;--r2:14px;--r3:18px;
+  --shadow:0 1px 3px rgba(28,24,20,.05),0 4px 16px rgba(28,24,20,.06);
+  --shadow2:0 2px 8px rgba(28,24,20,.08),0 12px 32px rgba(28,24,20,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--cream);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ══ NAV ══ */
+.nav{background:rgba(237,232,220,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 24px;}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;height:54px;gap:4px;}
+.nav-brand{font-size:14px;font-weight:800;color:var(--ink);letter-spacing:-.5px;margin-right:16px;flex-shrink:0;text-decoration:none;}
+.nav-brand em{color:var(--yellow);font-style:normal;}
+.nav-tabs{display:flex;gap:2px;background:rgba(28,24,20,.07);padding:4px;border-radius:30px;}
+.nav-tab{font-size:12px;font-weight:600;color:var(--muted);padding:5px 12px;border-radius:24px;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.nav-tab.active{background:var(--blue);color:#fff;}
+.nav-tab:hover:not(.active){background:var(--yellow);color:var(--ink);}
+@media(max-width:768px){.nav-tabs{display:none;}}
+.nav-right{margin-left:auto;}
+.nav-back{font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;padding:6px 14px;border:1.5px solid var(--border2);border-radius:20px;transition:all .2s;}
+.nav-back:hover{border-color:var(--blue);color:var(--blue);}
+
+/* ══ PAGE HEADER ══ */
+.page-header{max-width:1100px;margin:0 auto;padding:36px 24px 24px;}
+.page-header-inner{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.page-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blue-lt);border:1.5px solid rgba(21,101,192,.2);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.page-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.page-title{font-size:clamp(22px,4vw,34px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;}
+.page-sub{font-size:14px;color:var(--muted);margin-top:6px;}
+.live-price{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.price-chip{background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:8px 14px;display:flex;flex-direction:column;gap:1px;box-shadow:var(--shadow);}
+.price-chip-sym{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.price-chip-val{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--ink);}
+.price-chip-chg{font-family:var(--mono);font-size:10px;font-weight:600;}
+.up{color:var(--green);}.dn{color:var(--red);}
+
+/* ══ MAIN LAYOUT ══ */
+.main{max-width:1100px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;}
+@media(max-width:900px){.main{grid-template-columns:1fr;}}
+
+/* ══ AD ══ */
+.ad-slot{background:var(--cream2);border:1px dashed var(--border2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;}
+.ad-top{height:88px;max-width:1100px;margin:0 auto 20px;padding:0 24px;}
+.ad-top-inner{height:88px;background:var(--cream2);border:1px dashed var(--border2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--muted);}
+.ad-sidebar{height:280px;}
+
+/* ══ CARD ══ */
+.card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r3);padding:28px;box-shadow:var(--shadow);margin-bottom:16px;}
+.card-title{font-size:16px;font-weight:700;letter-spacing:-.3px;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.card-title-icon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:16px;flex-shrink:0;background:var(--blue-lt);border:1px solid rgba(21,101,192,.15);}
+
+/* ══ FORM ══ */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr;}}
+.field{display:flex;flex-direction:column;gap:6px;}
+.lbl{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;}
+
+select,input[type=number]{
+  background:var(--cream3);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  color:var(--ink);
+  font-family:var(--mono);
+  font-size:14px;
+  padding:11px 14px;
+  outline:none;width:100%;
+  transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;
+}
+select:focus,input:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(21,101,192,.1);
+  background:var(--paper);
+}
+select optgroup{font-weight:700;color:var(--muted);}
+select option{font-weight:400;background:var(--paper);color:var(--ink);}
+
+/* Lot presets */
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
+.preset{background:var(--cream2);border:1.5px solid var(--border);border-radius:6px;color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:600;padding:4px 10px;cursor:pointer;transition:all .15s;}
+.preset:hover,.preset.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+/* ══ CALC BUTTON ══ */
+.calc-btn{
+  margin-top:20px;width:100%;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  color:#fff;border:none;border-radius:30px;
+  font-family:var(--sans);font-size:15px;font-weight:700;
+  padding:14px;cursor:pointer;
+  transition:all .2s;letter-spacing:.2px;
+  box-shadow:0 4px 16px rgba(21,101,192,.3);
+}
+.calc-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(21,101,192,.4);}
+.calc-btn:active{transform:translateY(0);}
+
+/* ══ RESULTS ══ */
+.results{display:none;margin-top:24px;}
+.results.show{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+@media(max-width:480px){.res-grid{grid-template-columns:1fr;}}
+
+.res-card{border-radius:var(--r2);padding:18px;display:flex;flex-direction:column;gap:4px;}
+.rc-blue{background:linear-gradient(135deg,var(--blue),#1976d2);color:#fff;}
+.rc-yellow{background:linear-gradient(135deg,#f57f17,var(--yellow));color:#1a0e00;}
+.rc-green{background:linear-gradient(135deg,var(--green),#388e3c);color:#fff;}
+.rc-purple{background:linear-gradient(135deg,var(--purple),#8e24aa);color:#fff;}
+.rc-teal{background:var(--teal-lt);border:1.5px solid rgba(0,105,92,.2);color:var(--teal);}
+.rc-cream{background:var(--cream2);border:1.5px solid var(--border);color:var(--ink);}
+
+.res-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:.75;}
+.res-val{font-family:var(--mono);font-size:24px;font-weight:700;letter-spacing:-.5px;line-height:1.1;}
+.res-unit{font-size:13px;opacity:.7;margin-left:3px;}
+
+/* Formula box */
+.formula{background:linear-gradient(135deg,var(--blue-lt),var(--cream3));border:1.5px solid rgba(21,101,192,.18);border-radius:var(--r2);padding:16px 18px;font-family:var(--mono);font-size:12px;color:var(--ink2);line-height:1.85;}
+.formula strong{color:var(--blue);font-weight:700;}
+
+/* ══ QUICK REF TABLE ══ */
+.ref-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r3);padding:22px;box-shadow:var(--shadow);}
+.ref-title{font-size:13px;font-weight:700;margin-bottom:16px;color:var(--ink);}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:9px 10px;font-family:var(--mono);font-size:11px;border-bottom:1px solid var(--border);text-align:right;}
+th{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:left;background:var(--cream2);}
+td:first-child{text-align:left;font-weight:700;color:var(--ink);}
+.val-highlight{color:var(--blue);font-weight:700;}
+tr:hover td{background:var(--cream3);}
+.pair-cat{background:var(--blue);color:#fff;font-size:9px;letter-spacing:1px;text-transform:uppercase;}
+.pair-cat td{color:#fff !important;padding:5px 10px;}
+
+/* ══ SIDEBAR CARDS ══ */
+.info-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r3);padding:20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.info-card-title{font-size:12px;font-weight:700;letter-spacing:-.2px;margin-bottom:12px;color:var(--ink);}
+.fact-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+.fact-row:last-child{border:none;}
+.fact-lbl{font-size:12px;color:var(--muted);font-weight:500;}
+.fact-val{font-family:var(--mono);font-size:12px;font-weight:700;padding:2px 8px;border-radius:5px;}
+.fv-b{background:var(--blue-lt);color:var(--blue);}
+.fv-g{background:var(--green-lt);color:var(--green);}
+.fv-y{background:var(--yellow3);color:#7a5c00;}
+.fv-r{background:var(--red-lt);color:var(--red);}
+
+/* Broker CTA */
+.broker-card{background:linear-gradient(135deg,var(--ink),var(--ink2));border-radius:var(--r3);padding:20px;color:var(--cream2);margin-bottom:14px;}
+.broker-title{font-size:14px;font-weight:700;color:var(--cream3);margin-bottom:6px;}
+.broker-sub{font-size:12px;color:rgba(237,232,220,.5);line-height:1.6;margin-bottom:14px;}
+.broker-btn{display:block;background:var(--yellow);color:var(--ink);text-align:center;padding:10px;border-radius:24px;font-size:12px;font-weight:700;text-decoration:none;transition:background .2s;}
+.broker-btn:hover{background:var(--yellow2);}
+
+/* ══ FAQ ══ */
+.faq-wrap{max-width:1100px;margin:0 auto;padding:0 24px 60px;}
+.faq-section-title{font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:14px;}
+.faq-list{display:flex;flex-direction:column;gap:2px;}
+.faq-item{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);}
+.faq-q{padding:15px 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .15s;}
+.faq-q:hover{color:var(--blue);}
+.faq-icon{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);display:grid;place-items:center;font-size:14px;color:var(--blue);flex-shrink:0;transition:all .2s;background:var(--cream3);}
+.faq-q.open .faq-icon{background:var(--blue);border-color:var(--blue);color:#fff;transform:rotate(45deg);}
+.faq-a{display:none;padding:0 18px 14px;font-size:13px;color:var(--muted);line-height:1.75;border-top:1px solid var(--border);}
+.faq-a.open{display:block;}
+
+/* ══ FOOTER ══ */
+footer{background:var(--ink);padding:36px 24px;margin-top:0;}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+.f-brand{font-size:14px;font-weight:800;color:var(--cream3);}
+.f-brand em{color:var(--yellow);font-style:normal;}
+.f-sub{font-size:12px;color:rgba(237,232,220,.35);margin-top:4px;}
+.f-links{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+.f-links a{font-size:12px;color:rgba(237,232,220,.35);text-decoration:none;transition:color .15s;}
+.f-links a:hover{color:var(--yellow);}
+.disclaimer{font-size:10px;color:rgba(237,232,220,.2);margin-top:20px;max-width:1100px;margin-left:auto;margin-right:auto;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">Forex<em>Tools</em>Hub</a>
+    <div class="nav-tabs">
+      <a href="index.html" class="nav-tab">Home</a>
+      <a href="ftmo-calculator.html" class="nav-tab">FTMO</a>
+      <a href="pip-calculator.html" class="nav-tab active">Pip Value</a>
+      <a href="xauusd-position-size.html" class="nav-tab">Gold</a>
+      <a href="lot-size-calculator.html" class="nav-tab">Lot Size</a>
+      <a href="risk-reward.html" class="nav-tab">Risk/Reward</a>
+    </div>
+    <div class="nav-right">
+      <a href="index.html" class="nav-back">← All Tools</a>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="page-badge"><div class="page-badge-dot"></div>Free · No Signup · Verified</div>
+      <h1 class="page-title">Pip Value Calculator</h1>
+      <p class="page-sub">Instant pip values for 40+ pairs — USD, EUR, GBP, THB and more</p>
+    </div>
+    <div class="live-price">
+      <div class="price-chip">
+        <span class="price-chip-sym">EUR/USD</span>
+        <span class="price-chip-val">1.0842</span>
+        <span class="price-chip-chg up">▲ +0.12%</span>
+      </div>
+      <div class="price-chip">
+        <span class="price-chip-sym">XAU/USD</span>
+        <span class="price-chip-val">2,401.5</span>
+        <span class="price-chip-chg up">▲ +0.34%</span>
+      </div>
+      <div class="price-chip">
+        <span class="price-chip-sym">GBP/USD</span>
+        <span class="price-chip-val">1.2714</span>
+        <span class="price-chip-chg dn">▼ -0.08%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ad top -->
+<div class="ad-top">
+  <div class="ad-top-inner">AD SLOT · 728×90 — Google AdSense</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- LEFT: Calculator -->
+  <div>
+    <div class="card">
+      <div class="card-title">
+        <div class="card-title-icon">📐</div>
+        Calculate Pip Value
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="lbl">Currency Pair</label>
+          <select id="pair">
+            <optgroup label="── Majors ──">
+              <option value="EURUSD">EUR/USD</option>
+              <option value="GBPUSD">GBP/USD</option>
+              <option value="USDJPY">USD/JPY</option>
+              <option value="USDCHF">USD/CHF</option>
+              <option value="AUDUSD">AUD/USD</option>
+              <option value="USDCAD">USD/CAD</option>
+              <option value="NZDUSD">NZD/USD</option>
+            </optgroup>
+            <optgroup label="── Metals ──">
+              <option value="XAUUSD">XAU/USD — Gold (100oz)</option>
+              <option value="XAGUSD">XAG/USD — Silver (5000oz)</option>
+            </optgroup>
+            <optgroup label="── JPY Crosses ──">
+              <option value="EURJPY">EUR/JPY</option>
+              <option value="GBPJPY">GBP/JPY</option>
+              <option value="AUDJPY">AUD/JPY</option>
+              <option value="CADJPY">CAD/JPY</option>
+              <option value="CHFJPY">CHF/JPY</option>
+            </optgroup>
+            <optgroup label="── EUR Crosses ──">
+              <option value="EURGBP">EUR/GBP</option>
+              <option value="EURAUD">EUR/AUD</option>
+              <option value="EURCAD">EUR/CAD</option>
+              <option value="EURCHF">EUR/CHF</option>
+            </optgroup>
+            <optgroup label="── GBP Crosses ──">
+              <option value="GBPAUD">GBP/AUD</option>
+              <option value="GBPCAD">GBP/CAD</option>
+              <option value="GBPCHF">GBP/CHF</option>
+            </optgroup>
+            <optgroup label="── Other Crosses ──">
+              <option value="AUDCAD">AUD/CAD</option>
+              <option value="AUDNZD">AUD/NZD</option>
+            </optgroup>
+            <optgroup label="── Indices ──">
+              <option value="US30">US30 / DOW JONES</option>
+              <option value="NAS100">NAS100 / NASDAQ</option>
+              <option value="SPX500">SPX500 / S&P 500</option>
+              <option value="UK100">UK100 / FTSE 100</option>
+              <option value="GER40">GER40 / DAX</option>
+            </optgroup>
+            <optgroup label="── Exotics ──">
+              <option value="USDTHB">USD/THB</option>
+              <option value="USDZAR">USD/ZAR</option>
+              <option value="USDMXN">USD/MXN</option>
+              <option value="USDSEK">USD/SEK</option>
+              <option value="USDNOK">USD/NOK</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="lbl">Account Currency</label>
+          <select id="accountCcy">
+            <option value="USD">USD — US Dollar</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="GBP">GBP — British Pound</option>
+            <option value="JPY">JPY — Japanese Yen</option>
+            <option value="THB">THB — Thai Baht ฿</option>
+            <option value="AUD">AUD — Australian Dollar</option>
+            <option value="CAD">CAD — Canadian Dollar</option>
+            <option value="CHF">CHF — Swiss Franc</option>
+            <option value="SGD">SGD — Singapore Dollar</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="lbl">Position Size (Lots)</label>
+          <input type="number" id="lots" value="1.00" min="0.01" step="0.01"/>
+          <div class="presets">
+            <button class="preset" data-lot="0.01">Micro</button>
+            <button class="preset" data-lot="0.10">Mini</button>
+            <button class="preset on" data-lot="1.00">Standard</button>
+            <button class="preset" data-lot="5.00">5 Lots</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="lbl">Number of Pips</label>
+          <input type="number" id="pips" value="10" min="1" step="1"/>
+          <div class="presets">
+            <button class="preset on" data-pip="10">10</button>
+            <button class="preset" data-pip="20">20</button>
+            <button class="preset" data-pip="50">50</button>
+            <button class="preset" data-pip="100">100</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="calc-btn" id="calcBtn">Calculate Pip Value →</button>
+
+      <!-- Results -->
+      <div class="results" id="results">
+        <div class="res-grid">
+          <div class="res-card rc-blue">
+            <div class="res-label">Value per 1 Pip</div>
+            <div class="res-val" id="res-onepip">–</div>
+          </div>
+          <div class="res-card rc-yellow">
+            <div class="res-label">Total Value</div>
+            <div class="res-val" id="res-total">–</div>
+          </div>
+          <div class="res-card rc-teal">
+            <div class="res-label">Pip Size</div>
+            <div class="res-val" id="res-pipsize">–</div>
+          </div>
+          <div class="res-card rc-cream">
+            <div class="res-label">Contract Size</div>
+            <div class="res-val" id="res-contract" style="font-size:16px;">–</div>
+          </div>
+        </div>
+        <div class="formula" id="formulaBox"></div>
+      </div>
+    </div>
+
+    <!-- Quick Reference Table -->
+    <div class="card" style="padding:22px;">
+      <div class="card-title" style="margin-bottom:14px;">
+        <div class="card-title-icon" style="background:var(--yellow3);border-color:rgba(240,185,11,.2);">📋</div>
+        Standard Lot Reference (1 lot · USD account)
+      </div>
+      <table id="refTable">
+        <thead>
+          <tr>
+            <th>Pair</th>
+            <th style="text-align:right;">Pip Size</th>
+            <th style="text-align:right;">Contract</th>
+            <th style="text-align:right;">$1 Pip Value</th>
+          </tr>
+        </thead>
+        <tbody id="refTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RIGHT: Sidebar -->
+  <div>
+    <div class="ad-slot ad-sidebar" style="margin-bottom:14px;">AD SLOT · 300×250</div>
+
+    <!-- Gold specs -->
+    <div class="info-card">
+      <div class="info-card-title">🥇 XAU/USD Gold Specs</div>
+      <div class="fact-row"><span class="fact-lbl">Contract size</span><span class="fact-val fv-y">100 oz/lot</span></div>
+      <div class="fact-row"><span class="fact-lbl">Pip size</span><span class="fact-val fv-y">$0.01/oz</span></div>
+      <div class="fact-row"><span class="fact-lbl">Pip value</span><span class="fact-val fv-y">$1.00/lot</span></div>
+      <div class="fact-row"><span class="fact-lbl">vs EUR/USD</span><span class="fact-val fv-b">10× lower</span></div>
+    </div>
+
+    <!-- FTMO Quick Guide -->
+    <div class="info-card">
+      <div class="info-card-title">📊 FTMO $100k Quick Guide</div>
+      <div class="fact-row"><span class="fact-lbl">Daily loss limit</span><span class="fact-val fv-r">$5,000 (5%)</span></div>
+      <div class="fact-row"><span class="fact-lbl">Max drawdown</span><span class="fact-val fv-r">$10,000 (10%)</span></div>
+      <div class="fact-row"><span class="fact-lbl">Profit target</span><span class="fact-val fv-g">$10,000 (10%)</span></div>
+      <div class="fact-row"><span class="fact-lbl">Safe risk/trade</span><span class="fact-val fv-b">$500–1,000</span></div>
+      <a href="ftmo-calculator.html" style="display:block;margin-top:12px;text-align:center;background:var(--blue);color:#fff;padding:9px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='#1976d2'" onmouseout="this.style.background='var(--blue)'">Open FTMO Calculator →</a>
+    </div>
+
+    <!-- Broker -->
+    <div class="broker-card">
+      <div class="broker-title">Trade with tight spreads</div>
+      <div class="broker-sub">Better spreads = better R:R on every trade. ECN execution, no dealing desk.</div>
+      <a href="#" class="broker-btn">Open Pepperstone Account →</a>
+    </div>
+
+    <!-- Formula guide -->
+    <div class="info-card">
+      <div class="info-card-title">📐 Formula</div>
+      <div style="font-family:var(--mono);font-size:11px;line-height:1.9;color:var(--muted);">
+        Pip Value =<br/>
+        <span style="color:var(--blue);font-weight:700;">Pip Size × Contract × Lots</span><br/>
+        ÷ Exchange Rate<br/><br/>
+        <span style="color:var(--green);font-weight:700;">EUR/USD:</span> 0.0001 × 100,000 = $10<br/>
+        <span style="color:var(--orange);font-weight:700;">XAU/USD:</span> 0.01 × 100 = $1
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-wrap">
+  <div class="faq-section-title">Frequently Asked Questions</div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q">What is a pip in forex? <div class="faq-icon">+</div></div>
+      <div class="faq-a">A pip is the smallest standard price move in a currency pair. For most pairs (EUR/USD, GBP/USD) it's 0.0001 — the 4th decimal place. For JPY pairs it's 0.01 (2nd decimal). For Gold (XAU/USD), 1 pip = $0.01 per ounce.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Why is XAU/USD pip value different from forex pairs? <div class="faq-icon">+</div></div>
+      <div class="faq-a">Gold is traded per troy ounce. 1 standard lot = 100 oz. 1 pip = $0.01/oz × 100oz = $1.00 per lot. EUR/USD is $10/lot. This 10× difference is why gold positions need careful sizing — the same number of lots risks far less per pip.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How do I convert pip value to Thai Baht (THB)? <div class="faq-icon">+</div></div>
+      <div class="faq-a">Select THB as your account currency in the calculator above. The result uses an approximate rate of ฿35.8/$. For EUR/USD 1 standard lot: $10/pip × 35.8 = ฿358/pip. Always verify the live rate with your broker for exact calculations.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What lot size should I use for FTMO? <div class="faq-icon">+</div></div>
+      <div class="faq-a">For FTMO $100,000 at 1% risk per trade ($1,000), with a 20-pip SL on EUR/USD: Lot = $1,000 ÷ (20 × $10) = 5 lots. Use our <a href="ftmo-calculator.html" style="color:var(--blue);">FTMO Calculator</a> for full challenge tracking with daily loss monitoring.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="f-brand">Forex<em>Tools</em>Hub</div>
+      <div class="f-sub">Free professional forex calculators. Verified math.</div>
+    </div>
+    <div class="f-links">
+      <a href="index.html">Home</a>
+      <a href="ftmo-calculator.html">FTMO Calc</a>
+      <a href="lot-size-calculator.html">Lot Size</a>
+      <a href="xauusd-position-size.html">Gold</a>
+      <a href="risk-reward.html">Risk/Reward</a>
+      <a href="#">Privacy</a>
+    </div>
+  </div>
+  <p class="disclaimer">© 2026 ForexToolsHub.com — Calculations are for educational purposes only. Not financial advice. Verify all figures with your broker before trading.</p>
+</footer>
+
+<script>
+const PAIRS={
+  EURUSD:{pipSize:.0001,contractSize:100000,quote:'USD'},
+  GBPUSD:{pipSize:.0001,contractSize:100000,quote:'USD'},
+  USDJPY:{pipSize:.01,contractSize:100000,quote:'JPY'},
+  USDCHF:{pipSize:.0001,contractSize:100000,quote:'CHF'},
+  AUDUSD:{pipSize:.0001,contractSize:100000,quote:'USD'},
+  USDCAD:{pipSize:.0001,contractSize:100000,quote:'CAD'},
+  NZDUSD:{pipSize:.0001,contractSize:100000,quote:'USD'},
+  XAUUSD:{pipSize:.01,contractSize:100,quote:'USD',label:'100 oz'},
+  XAGUSD:{pipSize:.001,contractSize:5000,quote:'USD',label:'5000 oz'},
+  EURGBP:{pipSize:.0001,contractSize:100000,quote:'GBP'},
+  EURJPY:{pipSize:.01,contractSize:100000,quote:'JPY'},
+  GBPJPY:{pipSize:.01,contractSize:100000,quote:'JPY'},
+  EURCHF:{pipSize:.0001,contractSize:100000,quote:'CHF'},
+  AUDJPY:{pipSize:.01,contractSize:100000,quote:'JPY'},
+  CADJPY:{pipSize:.01,contractSize:100000,quote:'JPY'},
+  CHFJPY:{pipSize:.01,contractSize:100000,quote:'JPY'},
+  GBPAUD:{pipSize:.0001,contractSize:100000,quote:'AUD'},
+  GBPCAD:{pipSize:.0001,contractSize:100000,quote:'CAD'},
+  GBPCHF:{pipSize:.0001,contractSize:100000,quote:'CHF'},
+  EURAUD:{pipSize:.0001,contractSize:100000,quote:'AUD'},
+  EURCAD:{pipSize:.0001,contractSize:100000,quote:'CAD'},
+  AUDCAD:{pipSize:.0001,contractSize:100000,quote:'CAD'},
+  AUDNZD:{pipSize:.0001,contractSize:100000,quote:'NZD'},
+  US30:  {pipSize:1,contractSize:1,quote:'USD',label:'units'},
+  NAS100:{pipSize:.25,contractSize:1,quote:'USD',label:'units'},
+  SPX500:{pipSize:.1,contractSize:1,quote:'USD',label:'units'},
+  UK100: {pipSize:1,contractSize:1,quote:'GBP',label:'units'},
+  GER40: {pipSize:1,contractSize:1,quote:'EUR',label:'units'},
+  USDTHB:{pipSize:.0001,contractSize:100000,quote:'THB'},
+  USDZAR:{pipSize:.0001,contractSize:100000,quote:'ZAR'},
+  USDMXN:{pipSize:.0001,contractSize:100000,quote:'MXN'},
+  USDSEK:{pipSize:.0001,contractSize:100000,quote:'SEK'},
+  USDNOK:{pipSize:.0001,contractSize:100000,quote:'NOK'},
+};
+const TO_USD={USD:1,EUR:1.08,GBP:1.27,JPY:.0067,CHF:1.11,AUD:.65,CAD:.74,NZD:.60,THB:.028,ZAR:.054,MXN:.058,SEK:.092,NOK:.093};
+const ACC_RATES={USD:1,EUR:.926,GBP:.787,JPY:149.5,THB:35.8,AUD:1.538,CAD:1.351,CHF:.9,SGD:1.35};
+
+function fmt(v,ccy){
+  if(ccy==='JPY')return v.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});
+  if(v>=10000)return v.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});
+  if(v>=100)return v.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return v.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:4});
+}
+
+function calculate(){
+  const pk=document.getElementById('pair').value;
+  const acc=document.getElementById('accountCcy').value;
+  const lots=parseFloat(document.getElementById('lots').value)||1;
+  const pips=parseFloat(document.getElementById('pips').value)||10;
+  const p=PAIRS[pk];
+  if(!p)return;
+
+  const pipValQ=p.pipSize*p.contractSize*lots;
+  const toUSD=TO_USD[p.quote]||1;
+  const toAcc=ACC_RATES[acc]||1;
+  const pipValAcc=pipValQ*toUSD*toAcc;
+  const total=pipValAcc*pips;
+
+  const sym=acc==='THB'?'฿':'$';
+  const s2=acc==='JPY'?'¥':sym;
+  const prefix=acc==='THB'||acc==='JPY'?s2:'';
+
+  document.getElementById('res-onepip').textContent=prefix+fmt(pipValAcc,acc)+' '+acc;
+  document.getElementById('res-total').textContent=prefix+fmt(total,acc)+' '+acc;
+  document.getElementById('res-pipsize').textContent=p.pipSize;
+  document.getElementById('res-contract').textContent=(p.contractSize).toLocaleString()+' '+(p.label||'units');
+
+  document.getElementById('formulaBox').innerHTML=
+    `<strong>Formula:</strong> ${p.pipSize} × ${p.contractSize.toLocaleString()} × ${lots} lots = ${fmt(pipValQ,p.quote)} ${p.quote}`+
+    (p.quote!==acc?` → <strong>${prefix+fmt(pipValAcc,acc)} ${acc}</strong> per pip`:` per pip`)+
+    `<br/><strong>Total (${pips} pips):</strong> <strong>${prefix+fmt(total,acc)} ${acc}</strong>`;
+
+  document.getElementById('results').classList.add('show');
+  trackCalc('pip_calculator');
+}
+
+document.getElementById('calcBtn').addEventListener('click',calculate);
+document.querySelectorAll('.preset[data-lot]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.preset[data-lot]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('lots').value=b.dataset.lot;
+  });
+});
+document.querySelectorAll('.preset[data-pip]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.preset[data-pip]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('pips').value=b.dataset.pip;
+  });
+});
+
+/* Quick ref table */
+const REF=[
+  ['EUR/USD','EURUSD'],['GBP/USD','GBPUSD'],['USD/JPY','USDJPY'],
+  ['AUD/USD','AUDUSD'],['USD/CAD','USDCAD'],['USD/CHF','USDCHF'],
+  ['XAU/USD Gold','XAUUSD'],['XAG/USD Silver','XAGUSD'],
+  ['EUR/JPY','EURJPY'],['GBP/JPY','GBPJPY'],
+  ['US30','US30'],['NAS100','NAS100'],
+];
+const tbody=document.getElementById('refTbody');
+REF.forEach(([label,key])=>{
+  const p=PAIRS[key];
+  if(!p)return;
+  const pv=p.pipSize*p.contractSize*(TO_USD[p.quote]||1);
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${label}</td><td>${p.pipSize}</td><td>${p.contractSize.toLocaleString()} ${p.label||'units'}</td><td class="val-highlight">$${fmt(pv,'USD')}</td>`;
+  tbody.appendChild(tr);
+});
+
+/* FAQ */
+document.querySelectorAll('.faq-q').forEach(q=>{
+  q.addEventListener('click',()=>{
+    const open=q.classList.contains('open');
+    document.querySelectorAll('.faq-q').forEach(x=>x.classList.remove('open'));
+    document.querySelectorAll('.faq-a').forEach(x=>x.classList.remove('open'));
+    if(!open){q.classList.add('open');q.nextElementSibling.classList.add('open');}
+  });
+});
+
+calculate();
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Forex Pip Calculator","description":"Free forex pip calculator for 40+ pairs including XAU/USD Gold. Supports THB, USD, EUR accounts.","url":"https://forextoolshub.com/pip-calculator.html","applicationCategory":"FinanceApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+</body>
+</html>
